@@ -137,12 +137,16 @@ label canMagneticPowder:
         jump useMagneticPowder
 
 label useMagneticPowder:
-    
+
     pause
 
-label useUVLight: # OPTIONAL
+label useUVLight: # OPTIONAL, cant use after
     # darken screen + add a glow
     # depending on the clicked object, show the corresponding glowing fingerprint
+
+
+
+
 
     #show nina normal1
     #n "This is a template project that you can use to create your levels!"
