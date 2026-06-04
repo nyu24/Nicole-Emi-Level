@@ -48,7 +48,8 @@
     {
         "name": "Magnetic Powder",
         "image_name": "toolbox-magnetic_powder",
-	"usable": true
+	    "usable": true,
+        "action": "can_magnetic_powder"
     },
     {
         "name": "PVS Kit",
@@ -90,6 +91,7 @@
     {
         "name": "UV Light",
         "image_name": "toolbox-uv_light",
-	"usable": true
+	    "usable": true,
+        "action": "use_uv_light"
     }
 ]

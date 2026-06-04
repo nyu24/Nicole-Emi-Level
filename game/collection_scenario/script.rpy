@@ -24,6 +24,9 @@
 
 define n = Character(name=("Nina"), image="nina")
 default button_yes = False
+default click_object = ""
+default last_area = ""
+
 # SCREENS -----------------------------------------------------------------
 screen kitchenInteractables():
     imagebutton:
@@ -56,27 +59,44 @@ screen trashInteractables():
 screen topInteractables():
     imagebutton:
         auto "images/Environment Items/brownies-%s.png"
-        xalign 0.5
+        xalign 0.3
         yalign 0
         action Jump("start") # CHANGE ACTION TO CORRECT STEPS
         sensitive button_yes
     imagebutton:
         auto "images/Environment Items/mug-%s.png"
         xalign 0.9999
-        yalign 0.7
-        action Jump("start") # CHANGE ACTION TO CORRECT STEPS
+        yalign 0.8
+        action Jump("mugaction")
         sensitive button_yes
+
+screen backButton():
+    if last_area != "":
+        imagebutton:
+            auto "images/Environment Items/back_button_%s.png"
+            xalign 0.99
+            yalign 0.1
+            if last_area == "countertop":
+                action Jump("countertop")
+            elif last_area == "kitchen":
+                action Jump("start")
+            elif last_area == "trash":
+                action Jump("trashbin")
+            sensitive button_yes
 
 # LABELS ------------------------------------------------------------------------
 label start:
     scene kitchen
+    $ last_area = ""
     show screen kitchenInteractables
     # INSERT DIALOGUE HERE, have a dependency variable
     $ button_yes = True
+    show screen backButton
     call screen kitchenInteractables
     pause
 
 label trashbin:
+    $ last_area = "kitchen"
     $ button_yes = False
     scene trashinside
     # INSERT DIALOGUE HERE, have a dependency variable
@@ -85,6 +105,7 @@ label trashbin:
     pause
 
 label countertop:
+    $ last_area = "kitchen"
     $ button_yes = False
     scene countertop
     # INSERT DIALOGUE HERE, have a dependency variable
@@ -92,8 +113,36 @@ label countertop:
     call screen topInteractables
     pause
 
+# OBJECT ACTIONS -------------------------------------------
+label brownieaction:
+    $ last_area = "countertop"
+label weedbagaction:
+    $ last_area = "trash"
+label pillaction:
+    $ last_action = "trash"
 
+label mugaction:
+    $ last_area = "countertop"
+    scene black # CHANGE TO COUNTER PNG LATER
+    $ click_object = "mug"
+    show mug-idle:
+        zoom 2
+        xalign 0.5
+    call screen inventory
+    pause
 
+# EVIDENCE STUFF ACTIONS -------------------------------------
+label canMagneticPowder:
+    if (click_object == "mug") or (click_object == "pill") or (click_object == "weedbag"):
+        jump useMagneticPowder
+
+label useMagneticPowder:
+    
+    pause
+
+label useUVLight: # OPTIONAL
+    # darken screen + add a glow
+    # depending on the clicked object, show the corresponding glowing fingerprint
 
     #show nina normal1
     #n "This is a template project that you can use to create your levels!"
