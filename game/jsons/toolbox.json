@@ -62,7 +62,8 @@
     {
         "name": "Scalebar",
         "image_name": "toolbox-scalebar",
-	"usable": true
+	"usable": true,
+	"action": "use_scale_bar"
     },
     {
         "name": "Swab Pack",
@@ -72,12 +73,14 @@
     {
         "name": "Tamper Evident Tape",
         "image_name": "toolbox-tamper_evident_tape",
-	"usable": true
+	"usable": true,
+	"action": "use_tamper_tape"
     },
     {
         "name": "Tape",
         "image_name": "toolbox-tape",
-	"usable": true
+	"usable": true,
+	"action": "use_tape"
     },
     {
         "name": "Tip",

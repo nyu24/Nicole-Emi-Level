@@ -1,34 +1,76 @@
 [
     {
-        "name": "Fingerprint",
-        "image_name": "inventory-fingerprint"
+        "name": "Fingerprint 1",
+        "image_name": "inventory-fingerprint",
+	"description": "Fingerprint from the mug",
+	"usable": true,
+	"action": "bag_item1"
+    },
+{
+        "name": "Bag Fingerprint 1",
+        "image_name": "inventory-evidence_bag",
+	"description": "Fingerprint from the mug"
+    },
+{
+        "name": "Fingerprint 2",
+        "image_name": "inventory-fingerprint",
+	"usable": true,
+	"description": "Fingerprint from the plastic bag",
+	"action": "bag_item2"
+    },
+{
+        "name": "Bag Fingerprint 2",
+        "image_name": "inventory-evidence_bag",
+	"description": "Fingerprint from the plastic bag"
+    },
+{
+        "name": "Bag Fingerprint 3",
+        "image_name": "inventory-evidence_bag",
+	"description": "Fingerprint from the pill bottle"
+    },
+{
+        "name": "Fingerprint 3",
+        "image_name": "inventory-fingerprint",
+	"usable": true,
+	"description": "Fingerprint from the pill bottle",
+	"action": "bag_item3"
     },
     {
-        "name": "Footprint",
-        "image_name": "inventory-footprint"
+        "name": "Brownie",
+        "image_name": "inventory-brownie",
+	"description": "A brownie",
+	"usable": true,
+	"action": "bag_item4"
+    },
+{
+        "name": "Bag Brownie",
+        "image_name": "inventory-evidence_bag",
+	"description": "A brownie"
     },
     {
-        "name": "Gin",
-        "image_name": "inventory-gin"
+        "name": "Plastic bag",
+        "image_name": "inventory-weedbag",
+	"description": "A plastic bag containing some green substance",
+	"usable": true,
+	"action": "bag_item5"
+    },
+{
+        "name": "Bag Plastic bag",
+        "image_name": "inventory-evidence_bag",
+	"description": "A plastic bag containing some green substance"
     },
     {
-        "name": "Handprint",
-        "image_name": "inventory-handprint"
+        "name": "Pill bottle",
+        "image_name": "inventory-pill",
+	"description": "An unlabeled and empty orange pill bottle",
+	"usable": true,
+	"action": "bag_item6"
     },
-    {
-        "name": "Jar in Bag",
-        "image_name": "inventory-jar_in_bag"
-    },
-    {
-        "name": "PVS in Bag",
-        "image_name": "inventory-pvs_in_bag"
-    },
-    {
-        "name": "Splatter",
-        "image_name": "inventory-splatter"
-    },
-    {
-        "name": "Tape in Bag",
-        "image_name": "inventory-tape_in_bag"
+{
+        "name": "Bag Pill bottle",
+        "image_name": "inventory-evidence_bag",
+	"description": "An unlabeled and empty orange pill bottle"
     }
+
+
 ]
