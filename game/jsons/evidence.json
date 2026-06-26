@@ -8,7 +8,7 @@
     },
 {
         "name": "Bag Fingerprint 1",
-        "image_name": "inventory-evidence_bag",
+        "image_name": "inventory-sealedbag",
 	"description": "Fingerprint from the mug"
     },
 {
@@ -20,21 +20,22 @@
     },
 {
         "name": "Bag Fingerprint 2",
-        "image_name": "inventory-evidence_bag",
+        "image_name": "inventory-sealedbag",
 	"description": "Fingerprint from the plastic bag"
     },
 {
         "name": "Bag Fingerprint 3",
-        "image_name": "inventory-evidence_bag",
-	"description": "Fingerprint from the pill bottle"
+        "image_name": "inventory-sealedbag",
+	"description": "Fingerprint from the top of the pill bottle"
     },
 {
         "name": "Fingerprint 3",
         "image_name": "inventory-fingerprint",
 	"usable": true,
-	"description": "Fingerprint from the pill bottle",
+	"description": "Fingerprint from the top of the pill bottle",
 	"action": "bag_item3"
     },
+
     {
         "name": "Brownie",
         "image_name": "inventory-brownie",
@@ -44,7 +45,7 @@
     },
 {
         "name": "Bag Brownie",
-        "image_name": "inventory-evidence_bag",
+        "image_name": "inventory-sealedbag",
 	"description": "A brownie"
     },
     {
@@ -56,7 +57,7 @@
     },
 {
         "name": "Bag Plastic bag",
-        "image_name": "inventory-evidence_bag",
+        "image_name": "inventory-sealedbag",
 	"description": "A plastic bag containing some green substance"
     },
     {
@@ -68,7 +69,7 @@
     },
 {
         "name": "Bag Pill bottle",
-        "image_name": "inventory-evidence_bag",
+        "image_name": "inventory-sealedbag",
 	"description": "An unlabeled and empty orange pill bottle"
     }
 
