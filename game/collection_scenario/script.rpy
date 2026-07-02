@@ -10,11 +10,7 @@
     # EVIDNECE BAG
     toolbox.add_to_inventory(tools["Evidence Bag"])
     toolbox.add_to_inventory(tools["Tamper Evident Tape"])
-    # SWABBING
-    toolbox.add_to_inventory(tools["Swab Pack"])
-    toolbox.add_to_inventory(tools["Tube"])
-    toolbox.add_to_inventory(tools["UV Light"])
-    
+    #TODO: need to add gloves and camera mechanic
 
     evids = load_items("jsons/evidence.json")
 
@@ -25,14 +21,17 @@
         else: 
             return
 
-    #for evid in evids.values():
-    #    evidence.add_to_inventory(evid)
-
 # some notes:
-# anything labeled 'ATTENTION' requires manually change
+# anything labeled 'ATTENTION' requires manual change
 
 define n = Character(name=("Nina"), image="nina")
 
+# HOSPITAL VARS
+default got_testimony = {"parents": False, "friends": False}
+default want_collection_scenario = False    # USED FOR GIVING PHOTOS OF THE HOUSE PARTY
+default parent_count = {"1": 0, "2": 0, "3": 0}
+default friend_count = {"1": 0, "2": 0, "3": 0}
+# HOUSE VARS
 default got_intro = False
 default button_yes = False
 default backbuttonenable = True
@@ -42,14 +41,14 @@ default click_object = ""
 default last_area = ""
 default last_action = ""
 # for fingerprinting
-default can_fingerprint = ["mug", "weedbag", "pill", "pilltop"]
-default fingerprint1_stuff = ["mug", "pill", "pilltop"]
+default can_fingerprint = ["weedbag", "pill", "pilltop"]
+default fingerprint1_stuff = ["pill", "pilltop"]
 default fingerprint2_stuff = ["weedbag"]
-default dusted = {"mug": False, "weedbag": False, "pill": False, "pilltop": False}
-default uvd = {"mug": False, "weedbag": False, "pill": False, "pilltop": False}
-default scalebard = {"mug": False, "weedbag": False, "pill": False, "pilltop": False}
-default taped = {"mug": False, "weedbag": False, "pill": False, "pilltop": False}
-default backed = {"mug": False, "weedbag": False, "pill": False, "pilltop": False}
+default dusted = {"weedbag": False, "pill": False, "pilltop": False}
+default uvd = {"weedbag": False, "pill": False, "pilltop": False}
+default scalebard = {"weedbag": False, "pill": False, "pilltop": False}
+default taped = {"weedbag": False, "pill": False, "pilltop": False}
+default backed = {"weedbag": False, "pill": False, "pilltop": False}
 default num_evidence = 0
 # for bagged evidence
 default collected_objs = {"weedbag": False, "pill": False, "brownie": False}
@@ -69,36 +68,51 @@ screen kitchenInteractables():
         yalign 0.999999999
         action Jump("countertop")
         sensitive button_yes
+    imagebutton:
+        auto "images/Environment Items/counterleft-%s.png"
+        xalign 0.13
+        yalign 0.5
+        action Jump("countertopleft")
+        sensitive button_yes
 
 screen trashInteractables():
     if collected_objs["weedbag"] == False:
         imagebutton:
             auto "images/Environment Items/weedbag-%s.png"
-            xalign 0.1
+            xalign 0.5
             yalign 0.3
             action Jump("weedbagaction")
             sensitive button_yes
-    if collected_objs["pill"] == False:
-        imagebutton:
-            auto "images/Environment Items/pill-%s.png"
-            xalign 0.75
-            yalign 0.85
-            action Jump("pillaction")
-            sensitive button_yes
+    #if collected_objs["pill"] == False:
+    #    imagebutton:
+    #        auto "images/Environment Items/pill-%s.png"
+    #        xalign 0.75
+    #        yalign 0.85
+    #        action Jump("pillaction")
+    #        sensitive button_yes
 
 screen topInteractables():
     imagebutton:
         auto "images/Environment Items/brownies-%s.png"
-        xalign 0.3
-        yalign 0
+        xalign 0.999
+        yalign 0.7
         action Jump("brownieaction")
         sensitive button_yes
     imagebutton:
-        auto "images/Environment Items/mug-%s.png"
-        xalign 0.9999
-        yalign 0.8
-        action Jump("mugaction")
+        auto "images/Environment Items/juice-%s.png"
+        xalign 0.3
+        yalign 0
+        action Jump("countertop")
         sensitive button_yes
+
+screen topleftInteractables():
+    if collected_objs["pill"] == False:
+        imagebutton:
+            auto "images/Environment Items/pill-%s.png"
+            xalign 0.4
+            yalign 0.4
+            action Jump("pillaction")
+            sensitive button_yes
 
 screen backButton():
     if last_area != "" and backbuttonenable == True:
@@ -109,19 +123,14 @@ screen backButton():
             if last_area == "countertop":
                 action Jump("countertop")
             elif last_area == "kitchen":
-                action Jump("start")
+                action Jump("house")
             elif last_area == "trash":
                 action Jump("trashbin")
+            elif last_area == "houseoutside":
+                action Jump("houseoutside")
+            elif last_area == "countertopleft":
+                action Jump("countertopleft")
             sensitive button_yes
-
-#screen bagitup():
-#    frame:
-#        xalign 0.5
-#        yalign 0.5
-#        xsize 1920
-#        ysize 1080
-#        background Solid("#0000003b")
-
 
 screen browniecollect():
     zorder -1
@@ -167,6 +176,14 @@ screen pillcollect():
             action Jump("pillcollected")
             sensitive button_yes
 
+screen hospitaloutsideInteractables():
+    zorder -1
+    imagebutton:
+        auto "images/Environment Items/hospitaloutside-%s.png"
+        xalign 0.05
+        yalign 0.5
+        action Jump("insidehospital")
+        at Transform(zoom=1.2)
 
 # drag screens
 screen tape_drag_screen():
@@ -212,57 +229,197 @@ screen item_deposit_screen():
             elif(current_bag_item == "pill"):
                 child "images/Environment Items/pill-idle.png"
 
-# To display the screen in your script:
-# call screen drag_screen
-
 
 # LABELS ------------------------------------------------------------------------
+# HOSPITAL SECTION -------------------------------------------------------------------------------------------------------------
+#
+#
+# -------------------------------------------------------------------------------------------------------------
 label start:
-    scene kitchen
+    scene hospitaloutside
+    # brief on the scenario + testimona
+    show nina normal1
+    n "You might be wondering why I've brought you to the hospital."
+    n "Well, there's a new case."
+    n "A few hours ago, a 25 year old male collapsed during a house party. He died an hour ago here at the hospital."
+    show nina thinknote1
+    n "Hospital staff has confirmed that the man died from overdosing on his blood pressure medication."
+    n "However, we've been called in because his parents are adamant about his death being some sort of malicious plot."
+    n "According to the parents, their son was a happy man and would never commit suicide..."
+    show nina talk
+    n "The staff has already given me 2 blood samples, one taken pre-mortem, the other post-mortem. In addition I have the man's medical history and the hospital report."
+    n "I'll give them to you at the lab."
+    n "Right now, I need you to go inside and get testimony statements from the parents and the other party go-er."
+    n "Once you're done, meet me out here for the next steps."
+    hide nina talk
+    call screen hospitaloutsideInteractables
+label insidehospital:
+    scene hospital
+    "Who's testimony do you want to get?"
+    menu:
+        "Parents" if got_testimony["parents"] != True:
+            jump parents_testimony
+        "Friend" if got_testimony["friends"] != True:
+            jump friends_testimony
+        "Return to Nina":
+            jump return_to_nina
+
+label parents_testimony:
+    show parents
+    "What do you want to ask?"
+    menu:
+        "About your son...":
+            jump MDson
+        "About what happened at the party...":
+            jump MDparty
+        "About Alastor Brahe's medical history...":
+            jump MDmedhist
+        "Thank them for their time and give out condolences." if (parent_count["1"] >= 1 and parent_count["2"] >= 1 and parent_count["3"] >= 1):
+            hide parents
+            "Parents testimony has been added to your inventory."
+            $ evidence.add_to_inventory(evids["Parents Testimony"])
+            $ got_testimony["parents"] = True
+            jump insidehospital
+label MDson:
+    "Mrs Brahe: *sniff* Alastor was always such a happy child... Giggling over everything he found funny..."
+    "Mrs Brahe: I don't understand how this could've happened! *sobsob*"
+    "Mr Brahe: Alastor had his entire life in front of him. There's no way he would've overdosed on purpose!"
+    "Mr Brahe: I don't know care about what the medical personnel here are saying, he wouldn't have killed himself!!!"
+    "Mr Brahe: Someone must have done something to him at the party!"
+    $ parent_count["1"] += 1
+    jump parents_testimony
+label MDparty:
+    "Mrs Brahe: *sobsob* He wanted to celebrate with his friends about getting into a masters program... All I know is that he invited a few people..."
+    "Mr Brahe: We don't know exactly what happened at the party, I think you're better off asking someone who was there."
+    $ parent_count["2"] += 1
+    jump parents_testimony
+label MDmedhist:
+    "Mrs Brahe: *sniff* He's complained about bad headaches and dizziness back in his undergraduate years... But he told me he went to the doctor's and is managing it."
+    "Mr Brahe: Last time we asked about it, he mentioned something about a new medication he was taking, we don't know what it is though."
+    "Mr Brahe: If you're wondering about mental illness, he's has no history of it. No depression, nothing."
+    "Mr Brahe: So it doesn't make sense for him to have overdosed!"
+    $ parent_count["3"] += 1
+    jump parents_testimony
+
+label friends_testimony:
+    show friend
+    "What do you want to ask?"
+    menu:
+        "About their friend...":
+            jump Ffriend
+        "About what happened at the party...":
+            jump Fparty
+        "About Alastor Brahe's medical history...":
+            jump Fmedhist
+        "Thank them for their time and give out condolences." if (friend_count["1"] >= 1 and friend_count["2"] >= 1 and friend_count["3"] >= 1):
+            hide friend
+            "Friend testimony has been added to your inventory."
+            $ evidence.add_to_inventory(evids["Friend Testimony"])
+            $ got_testimony["friends"] = True
+            jump insidehospital
+label Ffriend:
+    "Friend: Alastor was a good friend... I just can't believe this is happening, he was just fine at the party!"
+    $ friend_count["1"] += 1
+    jump friends_testimony
+label Fparty:
+    "Friend: Besides him collapsing all of a sudden, he acted normally."
+    "Friend: We were all drinking and having fun, and like usual Alastor only drank mocktails, we were joking around and baking..."
+    "Friend: ... Listen, everyone brought something for the party, juices, alcohol, and someone even brought weed."
+    "Friend: We all decided to bake some brownies with it, but I know it wasn't enough to cause Alastor to collapse. We didn't even put the whole bag in!"
+    $ friend_count["2"] += 1
+    jump friends_testimony
+label Fmedhist:
+    "Friend: I don't know too much about his medical history... He prefered to keep that private."
+    "Friend: But he has mentioned in the past about not being able to drink because of some medication he was on."
+    "Friend: He also mentioned something about not being able to eat licorice?"
+    "Friend: But I'm pretty sure he hated that stuff anyway."
+    $ friend_count["3"] += 1
+    jump friends_testimony
+
+label return_to_nina: 
+    scene hospitaloutside
+    show nina normal1
+    n "Back already?"
+    n "Well, now that you've gotten the testimonies, we should go to the lab and analyse the blood samples to double check for anything out of the ordinary."
+    show nina thinknote1
+    n "Normally, we wouldn't go back to the scene of the incident since there's no evidence of malicious intent..."
+    n "But if you'd like to go and look around the party for possible causes of the man's death, I won't stop you."
+    show nina talk
+    n "Remember to follow protocol and bag everything up properly."
+    n "Note that you won't be able to head there if you decide to go to the lab first."
+    show nina normal1
+    n "So, do you want to head straight to the lab? Or do you want to check the house party first?"
+    menu:
+        "Head to the house party":
+            $ want_collection_scenario = True
+            jump houseoutside
+        "Head to the lab":
+            $ want_collection_scenario = False
+            jump lab
+    return
+# CODE BELOW IS FOR THE LAB ------------------------------------------------------------------------------------------
+#
+#
+# -------------------------------------------------------------------------------------------------------------
+label lab:
+    "THIS PART HASN'T BEEN ADDED YET, STILL IN THE WORKS WHOA"
+    return
+
+# CODE BELOW IS THE COLLECTION SCENARIO  ---------------------------------------------------------------------------
+#
+#
+# -------------------------------------------------------------------------------------------------------------
+label houseoutside:
+    scene houseoutside
     $ last_area = ""
-    show screen kitchenInteractables
     if(got_intro == False):
-        # INSERT DIALOGUE HERE, have a dependency variable
         show nina normal1
-        n "You're finally here!"
-        n "Here's a rundown of the scene."
-        show nina thinknote1
-        n "Around an hour ago a man passed away at this house party."
-        n "His friends don't know what happened besides him suddenly collapsing. Though one did mention that drugs were on the premises."
-        show nina talk
-        n "So, an otherwise healthy male in his 20s suddenly dies. Curious huh?"
-        show nina thinknote1
-        n "Oh! by the way, the body's already on its way to the morgue. So you'll be able to do an autopsy later at the lab."
-        show nina normal1
-        n "I need you to collect evidence and do a sweep of the kitchen to help determine the cause of death."
-        n "Remember your training. And goodluck."
+        n "Feel free to peruse the area and bag anything you find suspicious or potentially helpful."
+        n "Once you're done return here and we'll head to the lab for analysis."
         hide nina normal1
         $ got_intro = True
+    else:
+        show nina normal1
+        n "Ready to leave?"
+        menu:
+            "Yes, let's go to the labs":
+                jump lab
+            "No, I'll look around some more":
+                n "Alright, take your time."
+                hide nina normal1
+                jump house
+
+label house:
+    scene kitchen
+    $ last_area = "houseoutside"
+    show screen kitchenInteractables
     $ button_yes = True
     show screen backButton
     call screen kitchenInteractables
-    pause
 
 label trashbin:
     hide screen weedbagcollect
-    hide screen pillcollect
     $ last_area = "kitchen"
     $ button_yes = False
     scene trashinside
-    # INSERT DIALOGUE HERE, have a dependency variable
     $ button_yes = True
     call screen trashInteractables
-    pause
 
 label countertop:
     hide screen browniecollect
     $ last_area = "kitchen"
     $ button_yes = False
     scene countertop
-    # INSERT DIALOGUE HERE, have a dependency variable
     $ button_yes = True
     call screen topInteractables
-    pause
+
+label countertopleft:
+    hide screen pillcollect
+    $ last_area = "kitchen"
+    $ button_yes = False
+    scene countertopleft
+    $ button_yes = True
+    call screen topleftInteractables
 
 # OBJECT ACTIONS -------------------------------------------
 label brownieaction:
@@ -278,7 +435,7 @@ label brownieaction:
     $ last_action = "brownieaction"
     call screen inventory
 label browniecollected:
-    "Are you sure you would like to collect this? Doing so prevents you from doing any tests."
+    "Are you sure you would like to collect this? Doing so prevents you from doing any in field tests."
     $ button_yes = False
     menu:
         "Yes - Store in inventory":
@@ -286,7 +443,6 @@ label browniecollected:
             "A sample of the brownie has been added to your inventory."
             $ evidence.add_to_inventory(evids["Brownie"])
             $ num_evidence += 1
-            #$ backbuttonenable = False
             jump expression last_action
         "No":
             jump expression last_action
@@ -337,7 +493,7 @@ label weedbagaction:
     $ last_action = "weedbagaction"
     call screen inventory
 label weedbagcollected:
-    "Are you sure you would like to collect this? Doing so prevents you from doing any tests."
+    "Are you sure you would like to collect this? Doing so prevents you from doing any in field tests."
     $ button_yes = False
     menu:
         "Yes - Store in inventory":
@@ -353,7 +509,7 @@ label weedbagcollected:
 label pillaction:
     hide screen inventory
     $ button_yes = True
-    $ last_area = "trash"
+    $ last_area = "countertopleft"
     scene black 
     if collected_objs["pill"] == False:
         show screen pillcollect
@@ -366,32 +522,32 @@ label pillaction:
             if dusted.get(click_object) == True:
                 show fingerprint1_black:
                     zoom 0.08
-                    xalign 0.58
-                    yalign 0.4
+                    xalign 0.5
+                    yalign 0.25
                     alpha 0.75
             elif uvd.get(click_object) == False:
                 show fingerprint1_idle:
                     zoom 0.08
-                    xalign 0.58
-                    yalign 0.4
+                    xalign 0.5
+                    yalign 0.25
                     alpha 0.3
             elif uvd.get(click_object) == True:
                 show fingerprint1_white:
-                    zoom 0.08
-                    xalign 0.58
+                    xalign 0.5
+                    yalign 0.25
                     yalign 0.4
             if scalebard.get(click_object) == True:
                 show scale:
                     zoom 0.16
                     xalign 0.54
-                    yalign 0.4
+                    yalign 0.25
                     anchor (0.5, 0.5)
                     rotate 280
             if taped.get(click_object) == True:
                 show tapepiece:
                     zoom 0.1
-                    xalign 0.58
-                    yalign 0.4
+                    xalign 0.5
+                    yalign 0.25
             if backed.get(click_object) == True:
                 hide tapepiece
                 hide scale
@@ -437,7 +593,7 @@ label pillaction:
     $ last_action = "pillaction"
     call screen inventory
 label pillcollected:
-    "Are you sure you would like to collect this? Doing so prevents you from doing any tests."
+    "Are you sure you would like to collect this? Doing so prevents you from doing any in field tests."
     $ button_yes = False
     menu:
         "Yes - Store in inventory":
@@ -452,50 +608,6 @@ label pillcollected:
 label pillturned:
     $ pill_status += 1
     jump expression last_action
-
-
-label mugaction:
-    $ last_area = "countertop"
-    scene black 
-    $ click_object = "mug"
-    show mug-idle:
-        zoom 2
-        xalign 0.5
-    if dusted.get(click_object) == True:
-        show fingerprint1_black:
-            zoom 0.1
-            xalign 0.65
-            yalign 0.5
-            alpha 0.75
-    elif uvd.get(click_object) == False:
-        show fingerprint1_idle:
-            zoom 0.1
-            xalign 0.65
-            yalign 0.5
-            alpha 0.75
-    elif uvd.get(click_object) == True:
-        show fingerprint1_white:
-            zoom 0.1
-            xalign 0.65
-            yalign 0.5
-    if scalebard.get(click_object) == True:
-        show scale:
-            zoom 0.2
-            xalign 0.68
-            yalign 0.5
-            anchor (0.5, 0.5)
-            rotate 270
-    if taped.get(click_object) == True:
-        show tapepiece:
-            zoom 0.2
-            xalign 0.7
-            yalign 0.5
-    if backed.get(click_object) == True:
-        hide tapepiece
-        hide scale
-        hide fingerprint1_black
-    $ last_action = "mugaction"
-    call screen inventory
 
 # EVIDENCE STUFF ACTIONS -------------------------------------
 # FINGERPRINTS _____
@@ -586,16 +698,14 @@ label useBackingcard:
                 # ATTENTION! FOR THIS SECTION NEW FINGERPRINTS NEED TO BE ADDED MANUALLY
                 # TODO: can make changes here for more sophisticated fingerprinting
                 "Evidence added to inventory"
-                if click_object == "mug":
-                    $ evidence.add_to_inventory(evids["Fingerprint 1"])
-                elif click_object == "weedbag":
+                if click_object == "weedbag":
                     $ evidence.add_to_inventory(evids["Fingerprint 2"])
                 elif click_object == "pilltop":
-                    $ evidence.add_to_inventory(evids["Fingerprint 3"])
+                    $ evidence.add_to_inventory(evids["Fingerprint 1"])
                 elif click_object == "pill":
                     # ATTENTION! might need to change this dialogue AND for end game, minus 1 point or smthg idk
-                    n "More than half of the print is missing from the tape."
-                    n "It seems like the textured surface interfered with the sample. We can't use this as evidence."
+                    "More than half of the print is missing from the tape."
+                    "It seems like the textured surface interfered with the sample. This can't be used as evidence now."
                     $ num_evidence -= 1
                 $ num_evidence += 1
                 jump expression last_action
@@ -653,20 +763,6 @@ label useTamperTape:
             $ bagging = False
             $ current_bag_item = ""
             jump expression last_action
-        elif current_bag_item == "fingerprint3":
-            call screen tape_drag_screen
-            hide openbag
-            show sealedbag:
-                xpos 1000 
-                ypos 100
-            $ evidence.add_to_inventory(evids["Bag Fingerprint 3"])
-            "Bagged evidence has been added to your inventory"
-            $ num_evidence -= 1
-            hide screen bag_drag_screen
-            $ backbuttonenable = True
-            $ bagging = False
-            $ current_bag_item = ""
-            jump expression last_action
         elif current_bag_item == "brownie":
             call screen tape_drag_screen
             hide openbag
@@ -700,7 +796,7 @@ label useTamperTape:
             hide openbag
             show sealedbag:
                 xpos 1000 
-                ypos 100R
+                ypos 100
             $ evidence.add_to_inventory(evids["Bag Pill bottle"])
             "Bagged evidence has been added to your inventory"
             $ num_evidence -= 1
@@ -739,17 +835,7 @@ label bagItem2:
         call screen inventory
     else:
         jump expression last_action
-label bagItem3:
-    if bagging == True and current_bag_item == "":
-        $ current_bag_item = "fingerprint3"
-        call screen item_deposit_screen
-        $ evidence.delete_from_inventory(evids["Fingerprint 3"])
-        call screen inventory
-    elif current_bag_item != "":
-        "You've already put something in the evidence bag!"
-        call screen inventory
-    else:
-        jump expression last_action
+
 label bagItem4:
     if bagging == True and current_bag_item == "":
         $ current_bag_item = "brownie"
@@ -783,31 +869,3 @@ label bagItem6:
         call screen inventory
     else:
         jump expression last_action
-
-
-    #show nina normal1
-    #n "This is a template project that you can use to create your levels!"
-    #n "My name is Nina and I'm usually in the evidence collection level."
-    #n "This level is where you collect evidence to be later analyzed in the lab."
-    #show nina talk
-    #n "All code related to this level should be placed under the collection_scenario folder."
-    #n "You can have as many subdirectories as you'd like underneath it!"
-    #show nina normal1
-    #n "There will be three levels in your game: the evidence collection level, the lab level, and the courtroom level."
-    #n "There's one directory for each level."
-    #n "All levels use an inventory system which will be shown on the left-hand side."
-    #show nina thinknote1
-    #n "Try playing around with it!"
-    #call screen inventory
-    
-
-#label sample:
-    #show nina normal1
-    #n "Great job!"
-    #show nina talk
-    #n "There are more detailed instructions on how to use the inventory in inventory.rpy, so make sure to check that out!"
-    #n "Now, back to the overall structure of the game!"
-    #show nina thinknote1
-    #n "Once the player has finished collecting all their evidence, we should move on to the lab level for analysis."
-    #n "This won't be covered until later on though. For now, give yourselves a pat on the back!"
-    #return

@@ -18,8 +18,6 @@ init -5 python:
         renpy.jump("bagItem1")
     def bag_item2():
         renpy.jump("bagItem2")
-    def bag_item3():
-        renpy.jump("bagItem3")
     def bag_item4():
         renpy.jump("bagItem4")
     def bag_item5():

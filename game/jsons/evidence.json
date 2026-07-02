@@ -2,14 +2,14 @@
     {
         "name": "Fingerprint 1",
         "image_name": "inventory-fingerprint",
-	"description": "Fingerprint from the mug",
+	"description": "Fingerprint from the top of the pill bottle",
 	"usable": true,
 	"action": "bag_item1"
     },
 {
         "name": "Bag Fingerprint 1",
         "image_name": "inventory-sealedbag",
-	"description": "Fingerprint from the mug"
+	"description": "Fingerprint from the top of the pill bottle"
     },
 {
         "name": "Fingerprint 2",
@@ -22,18 +22,6 @@
         "name": "Bag Fingerprint 2",
         "image_name": "inventory-sealedbag",
 	"description": "Fingerprint from the plastic bag"
-    },
-{
-        "name": "Bag Fingerprint 3",
-        "image_name": "inventory-sealedbag",
-	"description": "Fingerprint from the top of the pill bottle"
-    },
-{
-        "name": "Fingerprint 3",
-        "image_name": "inventory-fingerprint",
-	"usable": true,
-	"description": "Fingerprint from the top of the pill bottle",
-	"action": "bag_item3"
     },
 
     {
@@ -71,7 +59,16 @@
         "name": "Bag Pill bottle",
         "image_name": "inventory-sealedbag",
 	"description": "An unlabeled and empty orange pill bottle"
+    },
+{
+	"name": "Parents Testimony",
+	"image_name": "inventory-test",
+	"description": "A testimony from Alastor Brahe's parents."
+    },
+{
+	"name": "Friend Testimony",
+	"image_name": "inventory-test",
+	"description": "A testimony from one of Alastor Brahe's friends."
     }
-
 
 ]
