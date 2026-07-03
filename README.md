@@ -1,5 +1,8 @@
-## Level Template
-
-This folder contains a sample Renpy project with the inventory and dialogue system built-in. There are further instructions on how to use the template inside the folder, so be sure to look into it.
-
-Copy this folder into your renpy projects so that you can play through it!
+Known bugs:
+    - To be added/found...
+Future updates:
+    - More sophisticated fingerprinting methodology (IP)
+    - Taking photos with the camera (maybe)
+    - Lab section :D
+Notes about my game:
+    - Evidence collection is optional (due to the nature of the case, not malicious? no real reason to do evidence collection)

@@ -501,7 +501,6 @@ label weedbagcollected:
             "Evidence has been added to your inventory."
             $ evidence.add_to_inventory(evids["Plastic bag"])
             $ num_evidence += 1
-            #$ backbuttonenable = False
             jump expression last_action
         "No":
             jump expression last_action
@@ -639,7 +638,7 @@ label useUVLight: # OPTIONAL, cant use after dusted
         if dusted.get(click_object) == True:
             "You've already dusted the fingerprints on this object."
             jump expression last_action
-        else: # MAY MODIFY THIS SECTION TO ALLOW FOR THE HOVER STUFF
+        else:
             if click_object in fingerprint1_stuff:
                 $ uvd[click_object] = True
                 hide fingerprint1_idle
