@@ -1,7 +1,6 @@
 Known bugs:
     - To be added/found...
 Future updates:
-    - More sophisticated fingerprinting methodology (IP)
     - Lab section :D
     - Fix formatting for the NPCs to follow Ninas'
 Notes about my game:

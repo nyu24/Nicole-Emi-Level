@@ -10,19 +10,15 @@
     # EVIDNECE BAG
     toolbox.add_to_inventory(tools["Evidence Bag"])
     toolbox.add_to_inventory(tools["Tamper Evident Tape"])
-    #TODO: need to add gloves and camera mechanic
 
     evids = load_items("jsons/evidence.json")
 
-    # FUNCTIONS FOR DRAG AND DROP
+    # FUNCTION FOR DRAG AND DROP
     def put_in_bag(drags, drop):
         if drop:
             return True
         else: 
             return
-
-# some notes:
-# anything labeled 'ATTENTION' requires manual change
 
 define n = Character(name=("Nina"), image="nina")
 
@@ -41,6 +37,7 @@ default click_object = ""
 default last_area = ""
 default last_action = ""
 # for fingerprinting
+default fingerprint_toback = ""
 default can_fingerprint = ["weedbag", "pill", "pilltop"]
 default fingerprint1_stuff = ["pill", "pilltop"]
 default fingerprint2_stuff = ["weedbag"]
@@ -83,13 +80,6 @@ screen trashInteractables():
             yalign 0.3
             action Jump("weedbagaction")
             sensitive button_yes
-    #if collected_objs["pill"] == False:
-    #    imagebutton:
-    #        auto "images/Environment Items/pill-%s.png"
-    #        xalign 0.75
-    #        yalign 0.85
-    #        action Jump("pillaction")
-    #        sensitive button_yes
 
 screen topInteractables():
     imagebutton:
@@ -229,6 +219,62 @@ screen item_deposit_screen():
             elif(current_bag_item == "pill"):
                 child "images/Environment Items/pill-idle.png"
 
+screen finger_drag():
+    zorder -1
+    draggroup:
+        drag:
+            drag_name "backing_drop"
+            droppable True
+            draggable False
+            dropped put_in_bag
+            xpos 1000 ypos 100
+            child "images/Environment Items/backing_card.png"
+        drag:
+            drag_name "item_drag"
+            draggable True
+            droppable False
+            xpos 300 ypos 300
+            drag_raise True
+            if("finger2 NS" == fingerprint_toback):
+                child "images/Environment Items/finger2NS.png"
+            elif("finger2 S" == fingerprint_toback):
+                child "images/Environment Items/finger2S.png"
+            elif("finger1 NS" == fingerprint_toback):
+                child "images/Environment Items/finger1NS.png"
+            elif("finger1 S" == fingerprint_toback):
+                child "images/Environment Items/finger1S.png"
+
+screen write_drag():
+    zorder -1
+    draggroup:
+        drag:
+            drag_name "backing_drop"
+            droppable True
+            draggable False
+            dropped put_in_bag
+            xpos 1000 ypos 100
+            if("finger2 NS" == fingerprint_toback):
+                child "images/Environment Items/finger2_noscale.png"
+            elif("finger2 S" == fingerprint_toback):
+                child "images/Environment Items/finger2_scale.png"
+            elif("finger1 NS" == fingerprint_toback):
+                child "images/Environment Items/finger1_noscale.png"
+            elif("finger1 S" == fingerprint_toback):
+                child "images/Environment Items/finger1_scale.png"
+        drag:
+            drag_name "item_drag"
+            draggable True
+            droppable False
+            xpos 300 ypos 300
+            drag_raise True
+            if("finger2 NS" == fingerprint_toback):
+                child "images/Environment Items/R.png"
+            elif("finger2 S" == fingerprint_toback):
+                child "images/Environment Items/R.png"
+            elif("finger1 NS" == fingerprint_toback):
+                child "images/Environment Items/L.png"
+            elif("finger1 S" == fingerprint_toback):
+                child "images/Environment Items/L.png"
 
 # LABELS ------------------------------------------------------------------------
 # HOSPITAL SECTION -------------------------------------------------------------------------------------------------------------
@@ -600,7 +646,6 @@ label pillcollected:
             "Evidence has been added to your inventory."
             $ evidence.add_to_inventory(evids["Pill bottle"])
             $ num_evidence += 1
-            #$ backbuttonenable = False
             jump expression last_action
         "No":
             jump expression last_action
@@ -651,7 +696,7 @@ label useUVLight: # OPTIONAL, cant use after dusted
         "Please select a piece of evidence"
         jump askWhatToBag
 
-label useScaleBar: # (not required to bag evidence) CURRENTLY THE IMG IS ALWAYS WITH SCALEBAR
+label useScaleBar: # (not required to bag evidence)
     if bagging == False:
         if (click_object in can_fingerprint):
             if scalebard[click_object] == True or dusted[click_object] == False:
@@ -694,15 +739,29 @@ label useBackingcard:
                 jump expression last_action
             elif taped[click_object] == True:
                 $ backed[click_object] = True
-                # ATTENTION! FOR THIS SECTION NEW FINGERPRINTS NEED TO BE ADDED MANUALLY
-                # TODO: can make changes here for more sophisticated fingerprinting
-                "Evidence added to inventory"
                 if click_object == "weedbag":
-                    $ evidence.add_to_inventory(evids["Fingerprint 2"])
+                    if scalebard[click_object] == True:
+                        $ fingerprint_toback = "finger2 S"
+                        call sophisticatedFinger
+                        "Evidence added to inventory"
+                        $ evidence.add_to_inventory(evids["Fingerprint 2 S"])
+                    else:
+                        $ fingerprint_toback = "finger2 NS"
+                        call sophisticatedFinger
+                        "Evidence added to inventory"
+                        $ evidence.add_to_inventory(evids["Fingerprint 2 NS"])
                 elif click_object == "pilltop":
-                    $ evidence.add_to_inventory(evids["Fingerprint 1"])
+                    if scalebard[click_object] == True:
+                        $ fingerprint_toback = "finger1 S"
+                        call sophisticatedFinger
+                        "Evidence added to inventory"
+                        $ evidence.add_to_inventory(evids["Fingerprint 1 S"])
+                    else:
+                        $ fingerprint_toback = "finger1 NS"
+                        call sophisticatedFinger
+                        "Evidence added to inventory"
+                        $ evidence.add_to_inventory(evids["Fingerprint 1 NS"])
                 elif click_object == "pill":
-                    # ATTENTION! might need to change this dialogue AND for end game, minus 1 point or smthg idk
                     "More than half of the print is missing from the tape."
                     "It seems like the textured surface interfered with the sample. This can't be used as evidence now."
                     $ num_evidence -= 1
@@ -714,6 +773,32 @@ label useBackingcard:
     elif bagging == True:
         "Please select a piece of evidence"
         jump askWhatToBag
+
+label sophisticatedFinger:
+    scene black
+    hide screen weedbagcollect
+    hide screen pillcollect
+    hide screen browniecollect
+    call screen finger_drag
+    if("finger2 NS" == fingerprint_toback):
+        show finger2_noscale:
+            xpos 1000 
+            ypos 100
+    elif("finger2 S" == fingerprint_toback):
+        show finger2_scale:
+            xpos 1000 
+            ypos 100
+    elif("finger1 NS" == fingerprint_toback):
+        show finger1_noscale:
+            xpos 1000 
+            ypos 100
+    elif("finger1 S" == fingerprint_toback):
+        show finger1_scale:
+            xpos 1000 
+            ypos 100
+    call screen write_drag
+    return
+
 # END OF FINGERPRINTS _____
 # EVIDENCE BAG ___________________
 label askWhatToBag:
@@ -743,7 +828,6 @@ label useTamperTape:
             $ evidence.add_to_inventory(evids["Bag Fingerprint 1"])
             "Bagged evidence has been added to your inventory"
             $ num_evidence -= 1
-            #hide screen bag_drag_screen
             $ backbuttonenable = True
             $ bagging = False
             $ current_bag_item = ""
