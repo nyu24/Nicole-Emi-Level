@@ -900,7 +900,10 @@ label bagItem1:
     if bagging == True and current_bag_item == "":
         $ current_bag_item = "fingerprint1"
         call screen item_deposit_screen
-        $ evidence.delete_from_inventory(evids["Fingerprint 1"])
+        if(scalebard["pilltop"] == True):
+            $ evidence.delete_from_inventory(evids["Fingerprint 1 S"])
+        else:
+            $ evidence.delete_from_inventory(evids["Fingerprint 1 NS"])
         call screen inventory
     elif current_bag_item != "":
         "You've already put something in the evidence bag!1"
@@ -911,7 +914,10 @@ label bagItem2:
     if bagging == True and current_bag_item == "":
         $ current_bag_item = "fingerprint2"
         call screen item_deposit_screen
-        $ evidence.delete_from_inventory(evids["Fingerprint 2"])
+        if(scalebard["weedbag"] == True):
+            $ evidence.delete_from_inventory(evids["Fingerprint 2 S"])
+        else:
+            $ evidence.delete_from_inventory(evids["Fingerprint 2 NS"])
         call screen inventory
     elif current_bag_item != "":
         "You've already put something in the evidence bag!"
