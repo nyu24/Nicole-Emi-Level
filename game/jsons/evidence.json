@@ -83,6 +83,39 @@
 	"name": "Friend Testimony",
 	"image_name": "inventory-test",
 	"description": "A testimony from one of Alastor Brahe's friends."
+    },
+{
+	"name": "Post blood sample",
+	"image_name": "postBS",
+	"description": "Post-mortem blood sample",
+	"usable": true,
+	"action": "use_postbs"
+
+    },
+{
+	"name": "Pre blood sample",
+	"image_name": "preBS",
+	"description": "Pre-mortem blood sample",
+	"usable": true,
+	"action": "use_prebs"
+
+    },
+{
+	"name": "Prepared post blood sample",
+	"image_name": "ppostBS",
+	"description": "Prep post-mortem blood sample",
+	"usable": true,
+	"action": "use_ppostbs"
+
+    },
+{
+	"name": "Prepared pre blood sample",
+	"image_name": "ppreBS",
+	"description": "Prep pre-mortem blood sample",
+	"usable": true,
+	"action": "use_pprebs"
+
     }
+
 
 ]

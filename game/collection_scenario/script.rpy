@@ -2,6 +2,8 @@
     import json
 
     tools = load_items("jsons/toolbox.json")
+    # GLOVES
+    toolbox.add_to_inventory(tools["gloves"])
     # FINGERPRINT STUFF
     toolbox.add_to_inventory(tools["Backing Card"])
     toolbox.add_to_inventory(tools["Scalebar"])
@@ -27,6 +29,12 @@ default got_testimony = {"parents": False, "friends": False}
 default want_collection_scenario = False    # USED FOR GIVING PHOTOS OF THE HOUSE PARTY
 default parent_count = {"1": 0, "2": 0, "3": 0}
 default friend_count = {"1": 0, "2": 0, "3": 0}
+default parent_1 = ""
+default parent_2 = ""
+default parent_3 = ""
+default friend_1 = ""
+default friend_2 = ""
+default friend_3 = ""
 # HOUSE VARS
 default got_intro = False
 default button_yes = False
@@ -36,6 +44,7 @@ default current_bag_item = ""
 default click_object = ""
 default last_area = ""
 default last_action = ""
+default put_gloves = False
 # for fingerprinting
 default fingerprint_toback = ""
 default can_fingerprint = ["weedbag", "pill", "pilltop"]
@@ -47,6 +56,7 @@ default scalebard = {"weedbag": False, "pill": False, "pilltop": False}
 default taped = {"weedbag": False, "pill": False, "pilltop": False}
 default backed = {"weedbag": False, "pill": False, "pilltop": False}
 default num_evidence = 0
+default sf = False
 # for bagged evidence
 default collected_objs = {"weedbag": False, "pill": False, "brownie": False}
 default pill_status = 0 # even default, odd top
@@ -105,7 +115,7 @@ screen topleftInteractables():
             sensitive button_yes
 
 screen backButton():
-    if last_area != "" and backbuttonenable == True:
+    if last_area != "" and backbuttonenable == True and sf == False:
         imagebutton:
             auto "images/Environment Items/back_button_%s.png"
             xalign 0.99
@@ -301,7 +311,7 @@ label start:
     call screen hospitaloutsideInteractables
 label insidehospital:
     scene hospital
-    "Who's testimony do you want to get?"
+    "Whose testimony do you want to get?"
     menu:
         "Parents" if got_testimony["parents"] != True:
             jump parents_testimony
@@ -314,11 +324,11 @@ label parents_testimony:
     show parents
     "What do you want to ask?"
     menu:
-        "About your son...":
+        "[parent_1] About your son...":
             jump MDson
-        "About what happened at the party...":
+        "[parent_2] About what happened at the party...":
             jump MDparty
-        "About Alastor Brahe's medical history...":
+        "[parent_3] About Alastor Brahe's medical history...":
             jump MDmedhist
         "Thank them for their time and give out condolences." if (parent_count["1"] >= 1 and parent_count["2"] >= 1 and parent_count["3"] >= 1):
             hide parents
@@ -333,11 +343,13 @@ label MDson:
     "Mr Brahe: I don't know care about what the medical personnel here are saying, he wouldn't have killed himself!!!"
     "Mr Brahe: Someone must have done something to him at the party!"
     $ parent_count["1"] += 1
+    $ parent_1 = "*DONE*"
     jump parents_testimony
 label MDparty:
     "Mrs Brahe: *sobsob* He wanted to celebrate with his friends about getting into a masters program... All I know is that he invited a few people..."
     "Mr Brahe: We don't know exactly what happened at the party, I think you're better off asking someone who was there."
     $ parent_count["2"] += 1
+    $ parent_2 = "*DONE*"
     jump parents_testimony
 label MDmedhist:
     "Mrs Brahe: *sniff* He's complained about bad headaches and dizziness back in his undergraduate years... But he told me he went to the doctor's and is managing it."
@@ -345,17 +357,18 @@ label MDmedhist:
     "Mr Brahe: If you're wondering about mental illness, he's has no history of it. No depression, nothing."
     "Mr Brahe: So it doesn't make sense for him to have overdosed!"
     $ parent_count["3"] += 1
+    $ parent_3 = "*DONE*"
     jump parents_testimony
 
 label friends_testimony:
     show friend
     "What do you want to ask?"
     menu:
-        "About their friend...":
+        "[friend_1] About their friend...":
             jump Ffriend
-        "About what happened at the party...":
+        "[friend_2] About what happened at the party...":
             jump Fparty
-        "About Alastor Brahe's medical history...":
+        "[friend_3] About Alastor Brahe's medical history...":
             jump Fmedhist
         "Thank them for their time and give out condolences." if (friend_count["1"] >= 1 and friend_count["2"] >= 1 and friend_count["3"] >= 1):
             hide friend
@@ -366,6 +379,7 @@ label friends_testimony:
 label Ffriend:
     "Friend: Alastor was a good friend... I just can't believe this is happening, he was just fine at the party!"
     $ friend_count["1"] += 1
+    $ friend_1 = "*DONE*"
     jump friends_testimony
 label Fparty:
     "Friend: Besides him collapsing all of a sudden, he acted normally."
@@ -373,6 +387,7 @@ label Fparty:
     "Friend: ... Listen, everyone brought something for the party, juices, alcohol, and someone even brought weed."
     "Friend: We all decided to bake some brownies with it, but I know it wasn't enough to cause Alastor to collapse. We didn't even put the whole bag in!"
     $ friend_count["2"] += 1
+    $ friend_2 = "*DONE*"
     jump friends_testimony
 label Fmedhist:
     "Friend: I don't know too much about his medical history... He prefered to keep that private."
@@ -380,6 +395,7 @@ label Fmedhist:
     "Friend: He also mentioned something about not being able to eat licorice?"
     "Friend: But I'm pretty sure he hated that stuff anyway."
     $ friend_count["3"] += 1
+    $ friend_3 = "*DONE*"
     jump friends_testimony
 
 label return_to_nina: 
@@ -401,15 +417,286 @@ label return_to_nina:
             jump houseoutside
         "Head to the lab":
             $ want_collection_scenario = False
+            hide nina normal1
             jump lab
     return
 # CODE BELOW IS FOR THE LAB ------------------------------------------------------------------------------------------
-#
+# 
 #
 # -------------------------------------------------------------------------------------------------------------
+# LAB VARS -----
+default in_lab = False
+# SPE
+default has_SPE_pre = False
+default has_SPE_post = False
+default step_SPE = ""
+default step_num_SPE = 1 # see ipad notes for specifics
+default inv_call_SPE = ""
+default choice_SPE = ""
+# GC-MS
+
+# LAB SCREENS ------
+
+# LAB LABELS ----------
 label lab:
-    "THIS PART HASN'T BEEN ADDED YET, STILL IN THE WORKS WHOA"
+    scene black
+    $ in_lab = True
+    #removing previous toolbox items
+    $ toolbox.delete_from_inventory(tools["gloves"])
+    $ toolbox.delete_from_inventory(tools["Backing Card"])
+    $ toolbox.delete_from_inventory(tools["Scalebar"])
+    $ toolbox.delete_from_inventory(tools["Magnetic Powder"])
+    $ toolbox.delete_from_inventory(tools["Tape"])
+    $ toolbox.delete_from_inventory(tools["Evidence Bag"])
+    $ toolbox.delete_from_inventory(tools["Tamper Evident Tape"])
+
+    # adding correct toolbox items
+    $ toolbox.add_to_inventory(tools["100% Methanol"])
+    $ toolbox.add_to_inventory(tools["Water"])
+    $ toolbox.add_to_inventory(tools["1% Formic acid"])
+    $ toolbox.add_to_inventory(tools["0.1% Formic acid"])
+    $ toolbox.add_to_inventory(tools["Methanol and 5% Ammonium Hydroxide"])
+
+    "What would you like to start with?"
+    jump lab_choice
+label lab_choice: # may add GC-MS and GC-headspace, but these are the minimum requirements to analyse
+    scene black
+    menu:
+        "Solid phase extraction [choice_SPE]":
+            jump solid_phase_extraction
+        "LC-MS":
+            jump lc_ms
+        "Fingerprinting Analysis":
+            jump fingerprint_analysis
+        "Blender":
+            jump blender
+        "Vortex mixer":
+            jump vortexmixer
+        "Centrifuge":
+            jump centrifuge
     return
+# SOLID PHASE EXTRACTION CODE
+label solid_phase_extraction:
+    #PRE-TREATMENT
+    scene spe11
+    show nina talk
+    n "Before you do anything, you'll need to pre-treat your sample and dilute it 1:1 with an acidic buffer."
+    n "Which blood sample do you want to dilute?"
+    hide nina talk
+    menu:
+        "Post-mortem blood sample" if not has_SPE_post:
+            $ evidence.add_to_inventory(evids["Post blood sample"])
+        "Pre-mortem blood sample" if not has_SPE_pre:
+            $ evidence.add_to_inventory(evids["Pre blood sample"])
+    "!!!!this is text for now I'll add photos + inventory functions later"
+    jump SPE_dilute_question
+label SPE_dilute_question:
+    "What will you use to dilute the blood sample?"
+    menu:
+        "Formic acid in water":
+            show nina normal1
+            n "Alright! Now that you have your diluted mixture you can start the solid phase extraction."
+            hide nina normal1
+            jump SPE_condition
+        "Methanol":
+            "That doesn't sound right."
+            hide nina thinknote1
+            jump SPE_dilute_question
+        "Just water":
+            "That doesn't sound right."
+            hide nina thinknote1
+            jump SPE_dilute_question
+    return
+label SPE_condition:
+    $ inv_call_SPE = "SPE_condition"
+    $ step_SPE = "SPE_condition1"
+    call screen inventory
+label SPE_condition1:
+    scene spe12
+    $ step_num_SPE = 2 # catridge has been reinsed with methanol waiting for 2
+    "Vacuum update to what flow rate?"
+    menu:
+        "5 mL/minute":
+            jump SPE_condition2
+        "1 mL/minute":
+            "Wrong."
+            jump SPE_condition1
+label SPE_condition2:
+    $ inv_call_SPE = "SPE_condition2"
+    $ step_SPE = "SPE_condition3" #1% formic acid or water
+    scene spe13
+    call screen inventory
+label SPE_condition3:
+    scene spe14
+    $ step_num_SPE = 3 # catridge has been reinsed with formic or water waiting for loading
+    "Vacuum update to what flow rate?"
+    menu:
+        "5 mL/minute":
+            jump SPE_loading
+        "1 mL/minute":
+            "Wrong."
+            jump SPE_condition3
+
+label SPE_loading:
+    scene spe13
+    $ renpy.pause(0.5, hard=True)
+    scene spe21
+    $ inv_call_SPE = "SPE_loading"
+    $ step_SPE = "SPE_loading1"
+    call screen inventory
+label SPE_loading1:
+    scene spe22
+    $ step_num_SPE = 4 # blood in, next wash w/formic
+    "Vacuum update to what flow rate?"
+    menu:
+        "5 mL/minute":
+            "Wrong."
+            jump SPE_loading1
+        "1 mL/minute":
+            jump SPE_washing
+
+label SPE_washing:
+    scene spe23
+    $ renpy.pause(0.5, hard=True)
+    scene spe31
+    $ inv_call_SPE = "SPE_washing"
+    $ step_SPE = "SPE_washing1"
+    call screen inventory
+label SPE_washing1:
+    scene spe32
+    $ step_num_SPE = 5 # washg fromic, next wash w/methanol
+    "Vacuum update to what flow rate?"
+    menu:
+        "5 mL/minute":
+            "Wrong."
+            jump SPE_washing1
+        "1 mL/minute":
+            jump SPE_washing2
+label SPE_washing2:
+    scene spe33
+    $ inv_call_SPE = "SPE_washing2"
+    $ step_SPE = "SPE_washing3" #methanol
+    call screen inventory
+label SPE_washing3:
+    scene spe34
+    $ step_num_SPE = 6 # 5% ammonium hydroxide ELUTION
+    "Vacuum update to what flow rate?"
+    menu:
+        "5 mL/minute":
+            "Wrong."
+            jump SPE_washing3
+        "1 mL/minute":
+            jump SPE_elution
+
+label SPE_elution:
+    scene spe33
+    $ renpy.pause(0.5, hard=True)
+    scene spe41
+    $ inv_call_SPE = "SPE_elution"
+    $ step_SPE = "SPE_elution1"
+    call screen inventory
+label SPE_elution1:
+    scene spe42
+    "Vacuum update to what flow rate?"
+    menu:
+        "5 mL/minute":
+            "Wrong."
+            jump SPE_elution1
+        "1 mL/minute":
+            jump SPE_elution2
+label SPE_elution2:
+    scene spe43
+    "What temperature should the mixture be dried at?"
+    # can add the timer, so like, do fingerprinting analysis while the mixture dries
+    menu:
+        "37 Celsius":
+            scene spe44
+            "You've obtained the prepared sample."
+            if(has_SPE_post):
+                $ evidence.add_to_inventory(evids["Prepared post blood sample"])
+            else:
+                $ evidence.add_to_inventory(evids["Prepared pre blood sample"])
+            if(has_SPE_post and has_SPE_pre):
+                $ choice_SPE = "COMPLETED"
+            $ step_num_SPE = 1
+            jump lab_choice
+        # can add other choices here
+
+# toolbox stuffs for SPE
+label use5Amm:
+    "How much will you add?"
+    menu:
+        "1 mL":
+            if(step_num_SPE == 6):
+                jump expression step_SPE
+            else:
+                "Wrong compound!"
+                jump expression inv_call_SPE
+        # can add other options here
+label use01Formic:
+    "How much will you add?"
+    menu:
+        "1 mL":
+            if(step_num_SPE == 4):
+                jump expression step_SPE
+            else:
+                "Wrong compound!"
+                jump expression inv_call_SPE
+        # can add other options here
+label useMethanol:
+    "How much will you add?"
+    menu:
+        "1 mL":
+            if(step_num_SPE == 1 or step_num_SPE == 5):
+                jump expression step_SPE
+            else:
+                "Wrong compound!"
+                jump expression inv_call_SPE
+        # can add other options here
+label useStep3:
+    "How much will you add?"
+    menu:
+        "1 mL":
+            if(step_num_SPE == 2):
+                jump expression step_SPE
+            else:
+                "Wrong compound!"
+                jump expression inv_call_SPE
+        # can add other options here
+label usePost:
+    $ has_SPE_post = True
+    if(step_num_SPE == 3):
+        $ evidence.delete_from_inventory(evids["Post blood sample"])
+        jump expression step_SPE
+    else:
+        "Wrong compound!"
+        jump expression inv_call_SPE
+label usePre:
+    $ has_SPE_pre = True
+    if(step_num_SPE == 3):
+        $ evidence.delete_from_inventory(evids["Pre blood sample"])
+        jump expression step_SPE
+    else:
+        "Wrong compound!"
+        jump expression inv_call_SPE
+
+# LC-MS CODE --------------------------------------------------
+label lc_ms:
+
+label usePpostBS:
+
+label usePpreBS:
+
+# FOR BROWNIE CODE --------------------------------------------------
+label blender:
+
+label vortexmixer:
+
+label centrifuge:
+    
+# FINGERPRINT ANALYSIS --------------------------------------------------
+label fingerprint_analysis:
+# i will copy and paste tutorial stuff
 
 # CODE BELOW IS THE COLLECTION SCENARIO  ---------------------------------------------------------------------------
 #
@@ -429,6 +716,7 @@ label houseoutside:
         n "Ready to leave?"
         menu:
             "Yes, let's go to the labs":
+                hide nina normal1
                 jump lab
             "No, I'll look around some more":
                 n "Alright, take your time."
@@ -436,7 +724,11 @@ label houseoutside:
                 jump house
 
 label house:
-    scene kitchen
+    hide screen inventory
+    if collected_objs["pill"] == True:
+        scene bk_kitchen_nopill
+    else: 
+        scene kitchen
     $ last_area = "houseoutside"
     show screen kitchenInteractables
     $ button_yes = True
@@ -444,6 +736,7 @@ label house:
     call screen kitchenInteractables
 
 label trashbin:
+    hide screen inventory
     hide screen weedbagcollect
     $ last_area = "kitchen"
     $ button_yes = False
@@ -452,6 +745,7 @@ label trashbin:
     call screen trashInteractables
 
 label countertop:
+    hide screen inventory
     hide screen browniecollect
     $ last_area = "kitchen"
     $ button_yes = False
@@ -460,6 +754,7 @@ label countertop:
     call screen topInteractables
 
 label countertopleft:
+    hide screen inventory
     hide screen pillcollect
     $ last_area = "kitchen"
     $ button_yes = False
@@ -775,6 +1070,7 @@ label useBackingcard:
         jump askWhatToBag
 
 label sophisticatedFinger:
+    $ sf = True
     scene black
     hide screen weedbagcollect
     hide screen pillcollect
@@ -797,6 +1093,7 @@ label sophisticatedFinger:
             xpos 1000 
             ypos 100
     call screen write_drag
+    $ sf = False
     return
 
 # END OF FINGERPRINTS _____
@@ -906,9 +1203,10 @@ label bagItem1:
             $ evidence.delete_from_inventory(evids["Fingerprint 1 NS"])
         call screen inventory
     elif current_bag_item != "":
-        "You've already put something in the evidence bag!1"
+        "You've already put something in the evidence bag!"
         call screen inventory
     else:
+        "You need an evidence bag!"
         jump expression last_action
 label bagItem2:
     if bagging == True and current_bag_item == "":
@@ -923,6 +1221,7 @@ label bagItem2:
         "You've already put something in the evidence bag!"
         call screen inventory
     else:
+        "You need an evidence bag!"
         jump expression last_action
 
 label bagItem4:
@@ -935,6 +1234,7 @@ label bagItem4:
         "You've already put something in the evidence bag!"
         call screen inventory
     else:
+        "You need an evidence bag!"
         jump expression last_action
 label bagItem5:
     if bagging == True and current_bag_item == "":
@@ -946,6 +1246,7 @@ label bagItem5:
         "You've already put something in the evidence bag!"
         call screen inventory
     else:
+        "You need an evidence bag!"
         jump expression last_action
 label bagItem6:
     if bagging == True and current_bag_item == "":
@@ -957,4 +1258,14 @@ label bagItem6:
         "You've already put something in the evidence bag!"
         call screen inventory
     else:
+        "You need an evidence bag!"
+        jump expression last_action
+
+label useGlove:
+    if not put_gloves:
+        "You've put gloves on."
+        $ put_gloves = True
+        jump expression last_action
+    else:
+        "You already have gloves on!"
         jump expression last_action
