@@ -27,8 +27,13 @@ init -5 python:
     def bag_item6():
         renpy.jump("bagItem6")
 
+    #fingerprint analysis in the lab
+    def bag_finger_1():
+        renpy.jump("bagFinger1")
+    def bag_finger_2():
+        renpy.jump("bagFinger2")
 
-    # LAB
+    # LAB SPE
     def use_Methanol():
         renpy.jump("useMethanol")
     def use_step3():
@@ -45,3 +50,5 @@ init -5 python:
         renpy.jump("usePpostBS")
     def use_pprebs():
         renpy.jump("usePpreBS")
+    def use_water():
+        renpy.jump("useWater")

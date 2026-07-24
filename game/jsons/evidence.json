@@ -15,6 +15,8 @@
     },
 {
         "name": "Bag Fingerprint 1",
+	"usable": true,
+	"action": "bag_finger_1",
         "image_name": "inventory-sealedbag",
 	"description": "Fingerprint from the top of the pill bottle"
     },
@@ -34,6 +36,8 @@
     },
 {
         "name": "Bag Fingerprint 2",
+	"usable": true,
+	"action": "bag_finger_2",
         "image_name": "inventory-sealedbag",
 	"description": "Fingerprint from the plastic bag"
     },
@@ -65,14 +69,14 @@
     {
         "name": "Pill bottle",
         "image_name": "inventory-pill",
-	"description": "An unlabeled and empty orange pill bottle",
+	"description": "A pill bottle with 2 pills left",
 	"usable": true,
 	"action": "bag_item6"
     },
 {
         "name": "Bag Pill bottle",
         "image_name": "inventory-sealedbag",
-	"description": "An unlabeled and empty orange pill bottle"
+	"description": "A pill bottle with 2 pills left"
     },
 {
 	"name": "Parents Testimony",
@@ -86,7 +90,7 @@
     },
 {
 	"name": "Post blood sample",
-	"image_name": "postBS",
+	"image_name": "blood_sample",
 	"description": "Post-mortem blood sample",
 	"usable": true,
 	"action": "use_postbs"
@@ -94,7 +98,7 @@
     },
 {
 	"name": "Pre blood sample",
-	"image_name": "preBS",
+	"image_name": "blood_sample",
 	"description": "Pre-mortem blood sample",
 	"usable": true,
 	"action": "use_prebs"
@@ -102,7 +106,7 @@
     },
 {
 	"name": "Prepared post blood sample",
-	"image_name": "ppostBS",
+	"image_name": "prepared_blood_sample",
 	"description": "Prep post-mortem blood sample",
 	"usable": true,
 	"action": "use_ppostbs"
@@ -110,12 +114,34 @@
     },
 {
 	"name": "Prepared pre blood sample",
-	"image_name": "ppreBS",
+	"image_name": "prepared_blood_sample",
 	"description": "Prep pre-mortem blood sample",
 	"usable": true,
 	"action": "use_pprebs"
 
     }
+,
+{
+	"name": "Hospital Report",
+	"image_name": "hospital_report",
+	"description": "Alastor's hospital report"
+
+    },
+{
+	"name": "Toxicology Report",
+	"image_name": "tox_report",
+	"description": "Alastor's toxicology report"
+
+
+    },
+{
+	"name": "House Party Photos",
+	"image_name": "photos",
+	"description": "Photos from the house party."
+
+
+    }
+
 
 
 ]

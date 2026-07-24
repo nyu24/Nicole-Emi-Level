@@ -61,7 +61,7 @@
         "name": "Water",
         "image_name": "water",
         "usable": true,
-        "action": "use_step3"
+        "action": "use_water"
     }
 ,{
         "name": "1% Formic acid",
@@ -70,7 +70,7 @@
         "action": "use_step3"
     },{
         "name": "0.1% Formic acid",
-        "image_name": "0.1_formic",
+        "image_name": "01_formic",
         "usable": true,
         "action": "use_01formic"
     },{
