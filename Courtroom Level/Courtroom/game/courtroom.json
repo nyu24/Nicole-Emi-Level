@@ -1,0 +1,30 @@
+[
+    {
+        "specialty": "toxicology",
+        "evidence": [
+            {
+                "name": "Toxicology Report",
+                "image": "tox_report",
+                "description": "The pre-mortem blood sample contains a high level of Fentanyl, high enough to indicate an overdose and low levels of caffeine and THC, which are unlikely to have been the cause of death. The post-mortem blood sample contains slightly higher levels of these substances.",
+                "truth_base": [
+                    "High levels of Fentanyl (player needs to mention for both blood samples)",
+		    "Fentanyl likely the cause of death",
+		    "Low levels of THC and caffeine (player needs to mention for both blood samples)"
+                ]
+            },
+            {
+                "name": "Hospital Report",
+                "image": "hospital_report",
+                "description": "The hospital report details the hospital's findings towards the deceased, Alastor Brahe, including past medical history and the resulting medical opinion. The initial screening described the deceased as a 25 year old Caucasian Male who collapsed and lost consciousness in his home during a party. He was brought to the hospital and had his blood drawn. He suddenly went into respiratory depression and lost consciousness once more. Doctors were not able to revive him. The findings are as follows: High levels of Fentanyl and low levels of THC in the blood, the urine has low pH with Fentanyl and THC detected. The patient's symptoms at the time were: Severe difficulty breathing, loss of consciousness, dizziness, confusion, and fatigue. The deceased Past medical history described no smoking, occasional recreational drug usage, and no alcohol usage. Deceased suffered from severe chronic pain from previous chemotherapy treatments as he has kidney cancer as a child but it was successfully treated with low risk of remission. The deceased was taking Fentanyl by buccal as 20mcg tablets, the dose was 1 tablet by mouth 2 times a day as needed prescribed for 30 days. It's been 29 days since the medication was prescribed, so 2 pills should remain in the pill bottle. The medical opinion in the report was that Alastor died from overdosing on their Fentanyl medication.",
+                "truth_base": [
+                    "died from overdosing on Fentanyl",
+                    "prescribed Fentanyl",
+                    "suffered from severe chronic pain",
+		    "occasional recreational drug usage, no history of smoking or alcohol usage",
+		    "low levels of THC and high levels of Fentanyl in the blood",
+		    "low pH in the urine"
+                ]
+            }
+        ]
+    }
+]

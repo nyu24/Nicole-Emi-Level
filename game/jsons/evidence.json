@@ -76,7 +76,10 @@
 {
         "name": "Bag Pill bottle",
         "image_name": "inventory-sbpill",
-	"description": "A pill bottle with 2 pills left"
+	"description": "A pill bottle with 2 pills left",
+	"usable": true,
+	"action": "bagged_pill"
+
     },
 {
 	"name": "Parents Testimony",
