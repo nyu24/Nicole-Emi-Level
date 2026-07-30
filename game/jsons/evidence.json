@@ -17,7 +17,7 @@
         "name": "Bag Fingerprint 1",
 	"usable": true,
 	"action": "bag_finger_1",
-        "image_name": "inventory-sealedbag",
+        "image_name": "inventory-sbprint1s",
 	"description": "Fingerprint from the top of the pill bottle"
     },
 {
@@ -38,7 +38,7 @@
         "name": "Bag Fingerprint 2",
 	"usable": true,
 	"action": "bag_finger_2",
-        "image_name": "inventory-sealedbag",
+        "image_name": "inventory-sbprint2s",
 	"description": "Fingerprint from the plastic bag"
     },
 
@@ -63,7 +63,7 @@
     },
 {
         "name": "Bag Plastic bag",
-        "image_name": "inventory-sealedbag",
+        "image_name": "inventory-sbweedbag",
 	"description": "A plastic bag containing some green substance"
     },
     {
@@ -75,7 +75,7 @@
     },
 {
         "name": "Bag Pill bottle",
-        "image_name": "inventory-sealedbag",
+        "image_name": "inventory-sbpill",
 	"description": "A pill bottle with 2 pills left"
     },
 {
@@ -124,14 +124,16 @@
 {
 	"name": "Hospital Report",
 	"image_name": "hospital_report",
-	"description": "Alastor's hospital report"
-
+	"description": "Alastor's hospital report",
+	"usable": true,
+	"action": "use_hospital_report"
     },
 {
 	"name": "Toxicology Report",
 	"image_name": "tox_report",
-	"description": "Alastor's toxicology report"
-
+	"description": "Alastor's toxicology report",
+	"usable": true,
+	"action": "use_tox_report"
 
     },
 {
