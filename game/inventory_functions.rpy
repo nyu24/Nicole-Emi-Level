@@ -20,6 +20,8 @@ init -5 python:
         renpy.jump("bagItem1")
     def bag_item2():
         renpy.jump("bagItem2")
+    def bag_item3():
+        renpy.jump("bagItem3")
     def bag_item4():
         renpy.jump("bagItem4")
     def bag_item5():
@@ -32,6 +34,8 @@ init -5 python:
         renpy.jump("bagFinger1")
     def bag_finger_2():
         renpy.jump("bagFinger2")
+    def bag_finger_3():
+        renpy.jump("bagFinger3")
     def bagged_pill():
         renpy.jump("baggedPill")
 

@@ -151,6 +151,26 @@ init python:
 
     set_mcq(print_name="print_1", mcq=print_1_question)
 
+    var_scores = {"print_1": (False, 15), 
+                "print_2": (True, 98), 
+                "print_3": (False, 37),
+                "print_4": (False, 46),
+                "print_5": (False, 39),
+                "print_6": (False, 28),
+                "print_7": (False, 15)}
+
+    set_scores(print_name="print_2", scores=var_scores)
+
+    print_2_question = MCQ(
+        question = "What kind of pattern is shown in the rightmost fingerprint?",
+        choices = [("Checkered", False), ("Zigzags", False), ("Whorls", True)],
+        responses = [["This is not a checkered pattern!", "Give it another go!"],
+                    ["This is not a zigzag pattern!", "Try again!"],
+                    ["This is a whorl! Good job!", "Let's finish the rest of the comparison."]]
+    )
+
+    set_mcq(print_name="print_2", mcq=print_2_question)
+
     print_3_question = MCQ(
         question = "What kind of pattern is shown in the righmost fingerprint?",
         choices = [("Double whorls", False), ("Whorls", True), ("Ripples", False)],
@@ -207,7 +227,7 @@ label computer:
 
 label import_print:
     $ hide_all_inventory()
-    if not prints[imported_print].processed:
+    if (not prints[imported_print].processed):
         show print_bg as print_bg_l at Transform(xpos=0.17, ypos=0.25) 
         show print_bg as print_bg_r at Transform(xpos=0.37, ypos=0.25)
         $ print_imported = True
@@ -289,6 +309,11 @@ label show_results:
         if imported_print == "print_1":
             n think "According to the database... This fingerprint belongs to Alastor."
             n normal1 "I suppose we can conclude it was him who opened the pill bottle."
+        elif imported_print == "print_2":
+            n think "According to the database... This fingerprint belongs to Alastor."
+            n normal1 "Looks like the juice that Alastor drank, at least according to the Friend at the hospital was grapefruit juice..."
+            n normal2 "..."
+            n think "I'm pretty sure Fentanyl interacts with grapefruit juice..."
         else: # imported_print == "print_3"
             n think "Looks like this print belongs to Alicia Brown."
             n normal2 "That might've been the party go-er that brought the bag."

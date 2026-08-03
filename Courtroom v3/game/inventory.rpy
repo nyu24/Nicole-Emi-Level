@@ -11,13 +11,6 @@ init -10 python:
     is possible that in later scenarios (lab, courtroom) you may want to separate item
     jsons by level.
 
-    Each object in the jsons takes values for the attrbutes in the Item class (name, description,
-    image_name, usable, action). The only mandatory attributes are name and image_name (this
-    will allow the item to show up in the inventory at minimum). To make the item usable,
-    you should include the usable (set this to True) and action attributes.
-    The action attribute should link to a function that you want to run when the item is clicked.
-    You can place these functions in the inventory_functions.rpy file.
-
     Adding and removing inventory items ---------------------------------------------------
     
     To add items to the toolbox, use "toolbox.add_to_inventory(<tool-item>)".
@@ -161,6 +154,15 @@ init -10 python:
             self.refresh_visible_inventory()
 
 
+        def get_item_by_name(self, name: str) -> Optional[Item]:
+            """Return the first inventory item with the given name, if one exists."""
+            for item in self._inventory:
+                if item.name == name:
+                    return item
+
+            return None
+
+
         def delete_from_inventory(self, item: Item) -> None:
             if item in self._inventory:
                 self._inventory.remove(item)
@@ -263,7 +265,7 @@ init -10 python:
     
 
     toolbox = Inventory()
-    evidence = Inventory()
+    evidences = Inventory()
 
 
 screen inventory():
@@ -273,33 +275,36 @@ screen inventory():
     # be clickable. However, if you want to force the player to interact
     # with the inventory before moving on, use the latter.
 
+    modal True
+
     $ inventory = selected_inventory
 
     frame:
         background None
+        yoffset -25
 
         hbox:
             xoffset 10
             yoffset 17
 
-            imagebutton:
-                auto "tool-inventory-icon-%s" at Transform(zoom=0.85)
-                insensitive "tool-inventory-icon-hover"
-                sensitive (inventory != toolbox)
-                action SetVariable("selected_inventory", toolbox)
+            # imagebutton:
+            #     auto "tool-inventory-icon-%s" at Transform(zoom=0.85)
+            #     insensitive "tool-inventory-icon-hover"
+            #     sensitive (inventory != toolbox)
+            #     action SetVariable("selected_inventory", toolbox)
 
-            imagebutton:
-                auto "inventory-icon-%s" at Transform(zoom=0.85)
-                insensitive "inventory-icon-hover"
-                sensitive (inventory != evidence)
-                action SetVariable("selected_inventory", evidence)
+            # imagebutton:
+            #     auto "inventory-icon-%s" at Transform(zoom=0.85)
+            #     insensitive "inventory-icon-hover"
+            #     sensitive (inventory != evidence)
+            #     action SetVariable("selected_inventory", evidence)
 
 
         add Transform("inventory-bg", xzoom=0.83, yzoom=0.95, yoffset=40)
 
-        #imagebutton:
-        #    auto "close-inv-%s" at Transform(rotate=1, xoffset=49, yoffset=350)
-        #    action [ToggleScreen("inventory"), ToggleScreen("open_inv")]
+        imagebutton:
+            auto "close-inv-%s" at Transform(rotate=1, xoffset=49, yoffset=350)
+            action [SetVariable("dialogue_boxes_visible", True), Hide("inventory"), Show("open_inv")]
 
 
         vbox:
@@ -357,18 +362,20 @@ screen inventory_slot(item=None):
                 add Transform("inventory-item-overlay", yzoom=0.67, xzoom=0.6)
 
                 hbox:
-                    spacing 10
-                    xoffset 15
-                    yoffset 40
+                    # spacing 10
+                    # xoffset 15
+                    # yoffset 40
+                    xalign 0.5
+                    yalign 0.5
 
-                    imagebutton:
-                        auto "use-inventory-item-%s" at Transform(zoom=0.47)
-                        action Function(use_item, usable, item_action)
+                    # imagebutton:
+                    #     auto "use-inventory-item-%s" at Transform(zoom=0.47)
+                    #     action Function(use_item, usable, item_action)
 
                     imagebutton:
                         auto "view-inventory-item-%s" at Transform(zoom=0.47)
                         action Function(view_item, name=name, image_name=image_name, description=description)
-
+                        
 
 screen inventory_info(name="", image_name="", description=""):
     # This screen is used by the inventory screen to display information
@@ -377,20 +384,27 @@ screen inventory_info(name="", image_name="", description=""):
 
     modal True
     add Solid("#0008")
-    add Transform("inventory-icon-bg", zoom=0.7, xalign=0.5, yalign=0.5)
-    add Transform(image_name, xalign=0.5, yalign=0.45)
-    text f"{name}" at Transform(xalign=0.5, yalign=0.57)
+    add Transform("inventory-icon-no-circle", zoom=0.8, xalign=0.5, yalign=0.5)
+    add Transform(image_name, xalign=0.3, yalign=0.45)
+    # text f"{name}" at Transform(xalign=0.3, yalign=0.6)
+
+    # TODO: Change the styling here if needed so that all your descriptions are rendered properly
     text f"{description}":
         size 24
-        xpos 600
-        xmaximum 780
-        yalign 0.64
+        xpos 800 # Position of the text relative to the top-left corner 
+        xmaximum 650 # When the text should wrap to the next line
+        yalign 0.5
+
+    text f"{name}":
+        xmaximum 30
+        xalign 0.3
+        yalign 0.6
     
     textbutton "✕":
         action Hide("inventory_info")
         text_size 60
-        xalign 0.65
-        yalign 0.34
+        xalign 0.72
+        yalign 0.22
 
 
 screen open_inv():
@@ -401,7 +415,7 @@ screen open_inv():
 
     imagebutton:
         auto "open-inv-%s" at Transform(yalign=0.53)
-        action [ToggleScreen("open_inv"), ToggleScreen("inventory")]
+        action [SetVariable("dialogue_boxes_visible", False), Hide("open_inv"), Show("inventory")]
 
 
-default selected_inventory = toolbox
+default selected_inventory = evidences

@@ -7,6 +7,7 @@
 
     def hide_all_inventory():
         renpy.hide_screen("inventory")
+        renpy.hide_screen("open_inv")
 
     def delete_all_toolbox():
         toolbox.delete_from_inventory(tools["gloves"])
@@ -28,6 +29,12 @@
                 return False
         return True
 
+    def check_all_scalebar():
+        for item in can_scale:
+            if(scalebard[item] == False):
+                return False
+        return True
+
     tools = load_items("jsons/toolbox.json")
     evids = load_items("jsons/evidence.json")
 
@@ -42,7 +49,7 @@ define n = Character(name=("Nina"), image="nina")
 
 ########### HOSPITAL VARS ##########
 default got_testimony = {"parents": False, "friends": False}
-default want_collection_scenario = False    # USED FOR GIVING PHOTOS OF THE HOUSE PARTY
+default want_collection_scenario = False
 default parent_count = {"1": 0, "2": 0, "3": 0}
 default friend_count = {"1": 0, "2": 0, "3": 0}
 default parent_1 = ""
@@ -64,25 +71,26 @@ default put_gloves = False
 default need_tape = False
 # for fingerprinting
 default fingerprint_toback = ""
-default can_fingerprint = ["weedbag", "pilltop"] #, "pill"
-default fingerprint1_stuff = ["pilltop"] #, "pill"
+default can_fingerprint = ["weedbag", "pilltop", "grape"] #, "pill"
+default fingerprint1_stuff = ["pilltop", "grape"] #, "pill"
 default fingerprint2_stuff = ["weedbag"]
-default dusted = {"weedbag": False, "pill": False, "pilltop": False}
-default uvd = {"weedbag": False, "pill": False, "pilltop": False}
-default scalebard = {"weedbag": False, "pill": False, "pilltop": False}
-default taped = {"weedbag": False, "pill": False, "pilltop": False}
-default backed = {"weedbag": False, "pill": False, "pilltop": False}
+default dusted = {"weedbag": False, "pill": False, "pilltop": False, "grape": False}
+default uvd = {"weedbag": False, "pill": False, "pilltop": False, "grape": False}
+default scalebard = {"weedbag": False, "pill": False, "pilltop": False, "grape": False}
+default taped = {"weedbag": False, "pill": False, "pilltop": False, "grape": False}
+default backed = {"weedbag": False, "pill": False, "pilltop": False, "grape": False}
 default num_evidence = 0
 default sf = False
+default can_scale = ["weedbag", "pilltop", "grape"]
 # for bagged evidence
-default collected_objs = {"weedbag": False, "weedbag_print": False, "pill": False, "pill_print": False}
-default bagged_objs = {"weedbag": False, "weedbag_print": False, "pill": False, "pill_print": False}
-default can_bag = ["weedbag", "weedbag_print","pill", "pill_print"]
+default collected_objs = {"weedbag": False, "weedbag_print": False, "pill": False, "pill_print": False, "grape": False, "grape_print": False}
+default bagged_objs = {"weedbag": False, "weedbag_print": False, "pill": False, "pill_print": False, "grape": False, "grape_print": False}
+default can_bag = ["weedbag", "weedbag_print","pill", "pill_print", "grape", "grape_print"]
 default pill_status = 0 # even default, odd top
 ########### LAB VARS ##########
 default in_lab = False
 default can_add_to_tox = ["print1", "pill", "photos", "hospital_report"] #FOR LATER COURTROOM
-default added_to_tox = {"print1": False, "pill": False, "photos": False, "hospital_report": False} #FOR LATER
+default added_to_tox = {"print1": False, "pill": False, "photos": False, "hospital_report": False} #UNUSED
 default has_tox = False
 # SPE
 default spe_difficulty = 0 # 0 = full checklist, 1 = half checklist, 2 = low checklist
@@ -95,13 +103,16 @@ default step_num_SPE = 1 # see ipad notes for specifics, relates to which step t
 default inv_call_SPE = ""
 default choice_SPE = ""
 default askq = True
-default tookpre = False # False = add post, True = add pre (after diluting b4 conditioning)
+default tookpre = False
+default tookpost = False
 # LC-MS
 default placed_in_lcms = ""
 default completed_lcms = {"pre": False, "post": False}
 default first_lcms = False
 default peak = ""
 default peaked = {"fent": False, "caf": False, "thc": False}
+# AFIS/CSI PIX
+default processed_prints = {"print_1": False, "print_2": False, "print_3": False}
 
 # SCREENS -----------------------------------------------------------------
 screen spe_spo: # the checklist
@@ -317,14 +328,14 @@ screen topInteractables():
         auto "images/Environment Items/brownies-%s.png"
         xalign 0.999
         yalign 0.7
-        action Jump("brownieaction")
+        action Jump("countertop")
         sensitive False # change to button_yes
     imagebutton:
         auto "images/Environment Items/juice-%s.png"
         xalign 0.3
         yalign 0
-        action Jump("countertop")
-        sensitive False # change to button_yes
+        action Jump("grapeaction")
+        sensitive button_yes
 
 screen topleftInteractables():
     if collected_objs["pill"] == False:
@@ -353,9 +364,9 @@ screen backButton():
                 action Jump("countertopleft")
             sensitive button_yes
 
-screen browniecollect(): #UNUSED
+screen grapecollect():
     zorder -1
-    if collected_objs["weedbag"] == False:
+    if collected_objs["grape"] == False:
         textbutton "Collect item?":
             style_prefix "textB"
             text_idle_color "#ffffffff"
@@ -363,7 +374,7 @@ screen browniecollect(): #UNUSED
             background "#696969ff"
             xalign 0.85
             yalign 0.85
-            action Jump("browniecollected")
+            action Jump("grapecollected")
             sensitive button_yes
 screen weedbagcollect():
     zorder -1
@@ -443,8 +454,8 @@ screen item_deposit_screen():
             drag_raise True
             if("finger" in current_bag_item):
                 child "images/Environment Items/backing fingerprint.png"
-            elif(current_bag_item == "brownie"):
-                child "images/Environment Items/brownie_idle.png"
+            elif(current_bag_item == "grape"):
+                child "images/Environment Items/grape_idle.png"
             elif(current_bag_item == "weedbag"):
                 child "images/Environment Items/weedbag-idle.png"
             elif(current_bag_item == "pill"):
@@ -470,9 +481,9 @@ screen finger_drag():
                 child "images/Environment Items/finger2NS.png"
             elif("finger2 S" == fingerprint_toback):
                 child "images/Environment Items/finger2S.png"
-            elif("finger1 NS" == fingerprint_toback):
+            elif("finger1 NS" == fingerprint_toback or "finger3 NS" == fingerprint_toback):
                 child "images/Environment Items/finger1NS.png"
-            elif("finger1 S" == fingerprint_toback):
+            elif("finger1 S" == fingerprint_toback or "finger3 S" == fingerprint_toback):
                 child "images/Environment Items/finger1S.png"
 
 screen write_drag():
@@ -488,9 +499,9 @@ screen write_drag():
                 child "images/Environment Items/finger2_noscale.png"
             elif("finger2 S" == fingerprint_toback):
                 child "images/Environment Items/finger2_scale.png"
-            elif("finger1 NS" == fingerprint_toback):
+            elif("finger1 NS" == fingerprint_toback or "finger3 NS" == fingerprint_toback):
                 child "images/Environment Items/finger1_noscale.png"
-            elif("finger1 S" == fingerprint_toback):
+            elif("finger1 S" == fingerprint_toback or "finger3 S" == fingerprint_toback):
                 child "images/Environment Items/finger1_scale.png"
         drag:
             drag_name "item_drag"
@@ -502,9 +513,9 @@ screen write_drag():
                 child "images/Environment Items/R.png"
             elif("finger2 S" == fingerprint_toback):
                 child "images/Environment Items/R.png"
-            elif("finger1 NS" == fingerprint_toback):
+            elif("finger1 NS" == fingerprint_toback or "finger3 NS" == fingerprint_toback):
                 child "images/Environment Items/L.png"
-            elif("finger1 S" == fingerprint_toback):
+            elif("finger1 S" == fingerprint_toback or "finger3 S" == fingerprint_toback):
                 child "images/Environment Items/L.png"
 
 # LABELS ------------------------------------------------------------------------
@@ -513,11 +524,25 @@ screen write_drag():
 #
 # -------------------------------------------------------------------------------------------------------------
 label start:
-    scene hospitaloutside
+    # trigger warning and select difficulty
+    scene black
+    "Trigger warning: the game talks about overdosing and suicide."
+    "Please be advised."
+    "Select your difficulty (applicable only in the lab section):"
+    menu:
+        "Easy (given detailed steps)":
+            $ spe_difficulty = 0
+        "Medium (given less detailed steps)":
+            $ spe_difficulty = 1
+        "Hard (given brief steps)":
+            $ spe_difficulty = 2
+
+    #start the game
+    scene hospitaloutside with fade
     # brief on the scenario + testimona
     show nina normal1
     n "You might be wondering why I've brought you to the hospital."
-    n "Well, there's a new case."
+    n "Well, there's a new coroner case."
     n "A few hours ago, a 25 year old male collapsed during a house party. He died an hour ago here at the hospital."
     show nina thinknote1
     n "Hospital staff has confirmed that the man died from overdosing on Fentanyl."
@@ -539,9 +564,7 @@ label insidehospital:
             jump parents_testimony
         "Friend" if got_testimony["friends"] != True:
             jump friends_testimony
-        "Return to Nina": 
-            # if got_testimony["friends"] and got_testimony["parents"]:
-            #TODO change this when done
+        "Return to Nina" if got_testimony["friends"] and got_testimony["parents"]:
             jump return_to_nina
 
 label parents_testimony:
@@ -650,9 +673,38 @@ label return_to_nina:
 # 
 #
 # -------------------------------------------------------------------------------------------------------------
-label courtroom:
+label courtroom: # not really but this is the get score thing
     scene black
-    "To be implemented"
+    n normal1 "Here's a review of what you did wrong/could do next time."
+    n normal2 "In the Evidence Collection scenario..."
+    if(want_collection_scenario):
+        $ forgot = 0
+        python:
+            for item in can_bag:
+                if(collected_objs[item] == False):
+                    forgot += 1
+        n normal2 "You didn't collect [forgot] item(s)"
+        if not check_all_scalebar():
+            n normal1 "You didn't place the scalebar on every fingerprint you examined."
+        if not put_gloves:
+            n normal1 "You didn't put gloves on before you examined the house party scene."
+    else:
+        n normal1 "You didn't do anything since you skipped it."
+        n normal2 "In doing so, you missed 6 pieces of evidence."
+        n talk "Some of which would help you in determining a better explanation for a possible cause of death."
+        n talk "Anyway..."
+    n normal1 "In the Lab section you..."
+    python:
+        count = 0
+        for fingerprint in processed_prints.keys():
+            if(not processed_prints[fingerprint]):
+                count += 1
+    n normal1 "You didn't process [count] fingerprint(s) because you either didn't collect them at the house party."
+    n normal2 "Or forgot to do so at the lab."
+
+    n normal1 "That's everything you missed!"
+    n normal2 "In the courtroom, you'll be given every piece of evidence you collected and missed. So you can practice."
+    n normal1 "If you didn't collect/do everything correctly, play this again!"
     return
 
 # CODE BELOW IS FOR THE LAB ------------------------------------------------------------------------------------------
@@ -699,7 +751,11 @@ label materials:
 label data_analysis:
     hide screen inventory
     scene afis_interface
-    call screen data_analysis_lab # fingerprinting only (button)
+    if(not bagged_objs["weedbag_print"] and not bagged_objs["pill_print"] and not bagged_objs["grape_print"]):
+        n normal1 "You don't have any fingerprint to import..."
+        jump lab_nonina
+    else:
+        call screen data_analysis_lab # fingerprinting only (button)
 
 # LC-MS CODE (includes tox report and 'additional comments') --------------------------------------------------
 label lc_ms:
@@ -722,7 +778,7 @@ label tox_report:
     n "Here's the tox report from the blood samples."
     $ evidence.add_to_inventory(evids["Toxicology Report"])
     $ last_action = "tox_report2"
-    call screen useToxReport
+    jump useToxReport
 label tox_report2:
     show nina talk
     n "Feel free to finish up any unfinished work."
@@ -836,7 +892,7 @@ label lcms_peak_thc:
             call screen lcms_chromatogram
     else:
         n think "That doesn't seem to be correct."
-        jump lcms_peak_fent
+        jump lcms_peak_thc
 
 label ask_peak:
     n think "What RRT belongs here?"
@@ -904,6 +960,18 @@ label solid_phase_extraction:
     $ toolbox.add_to_inventory(tools["Methanol and 5% Ammonium Hydroxide"])
     #PRE-TREATMENT
     scene lab_counter_bk
+    if(spe_difficulty == 0):
+        show spe_dilute_1:
+            xalign 0.999
+            yalign 0.0
+    elif(spe_difficulty == 2):
+        show spe_dilute_2:
+            xalign 0.999
+            yalign 0.0
+    else: 
+        show spe_dilute_3:
+            xalign 0.999
+            yalign 0.0
     show beaker_empty:
         xalign 0.5
         yalign 0.5
@@ -927,10 +995,12 @@ label SPE_dilute_question:
     call screen inventory
     return
 label SPE_condition:
-    if(tookpre):
+    if(not tookpre):
         $ evidence.add_to_inventory(evids["Pre blood sample"])
-    else:
+        $ tookpre = True
+    elif(not tookpost):
         $ evidence.add_to_inventory(evids["Post blood sample"])
+        $ tookpost = True
     scene spe11
     show screen spe_spo
     $ inv_call_SPE = "SPE_condition"
@@ -1137,9 +1207,7 @@ label useMethanol:
             # can add other options here
 label useStep3: # 1% formic acid 
     if(inv_call_SPE == "SPE_dilute_question"):
-        show nina normal1
-        "Good! Now we'll start."
-        hide nina normal1
+        n normal1 "Good! Now we'll start."
         jump expression step_SPE
     else:
         if(step_num_SPE != 2):
@@ -1267,7 +1335,7 @@ label countertop:
     $toolbox.add_to_inventory(tools["Magnetic Powder"])
     $toolbox.add_to_inventory(tools["Tape"])
     hide screen inventory
-    hide screen browniecollect
+    hide screen grapecollect
     $ last_area = "kitchen"
     $ button_yes = False
     scene countertop
@@ -1291,26 +1359,59 @@ label countertopleft:
     call screen topleftInteractables
 
 # OBJECT ACTIONS -------------------------------------------
-label brownieaction:
+label grapeaction:
     $ button_yes = True
     $ last_area = "countertop"
     scene black
-    $ click_object = "brownie"
-    if collected_objs["brownie"] == False:
-        show brownie_idle:
+    $ click_object = "grape"
+    if collected_objs["grape"] == False:
+        show grape_idle:
             xalign 0.5
             yalign 0.5
-        show screen browniecollect
-    $ last_action = "brownieaction"
+        show screen grapecollect
+        if dusted.get(click_object) == True:
+            show fingerprint1_black:
+                zoom 0.1
+                xalign 0.47
+                yalign 0.43
+                alpha 1
+        elif uvd.get(click_object) == False:
+            show fingerprint1_idle:
+                zoom 0.1
+                xalign 0.47
+                yalign 0.43
+                alpha 0.7
+        elif uvd.get(click_object) == True:
+            show fingerprint1_white:
+                zoom 0.1
+                xalign 0.47
+                yalign 0.43
+        if scalebard.get(click_object) == True:
+            show scale:
+                zoom 0.14
+                xalign 0.5
+                yalign 0.42
+                anchor (0.5, 0.5)
+                rotate 80
+        if taped.get(click_object) == True:
+            show tapepiece:
+                zoom 0.1
+                xalign 0.5
+                yalign 0.42
+        if backed.get(click_object) == True:
+            hide tapepiece
+            hide scale
+            hide fingerprint1_black
+    $ last_action = "grapeaction"
     call screen inventory
-label browniecollected:
+label grapecollected:
     "Are you sure you would like to collect this? Doing so prevents you from doing any in field tests."
     $ button_yes = False
     menu:
         "Yes - Store in inventory (NOT BAGGED)":
-            $ collected_objs["brownie"] = True
-            "A sample of the brownie has been added to your inventory."
-            $ evidence.add_to_inventory(evids["Brownie"])
+            $ collected_objs["grape"] = True
+            "The grapefruit juice bottle has been added to your inventory."
+            $ evidence.add_to_inventory(evids["Grape"])
             $ num_evidence += 1
             jump expression last_action
         "No":
@@ -1565,6 +1666,18 @@ label useBackingcard:
                         "Evidence added to inventory"
                         $ evidence.add_to_inventory(evids["Fingerprint 1 NS"])
                     $ collected_objs["pill_print"] = True
+                elif click_object == "grape":
+                    if scalebard[click_object] == True:
+                        $ fingerprint_toback = "finger3 S"
+                        call sophisticatedFinger from _call_sophisticatedFinger_4
+                        "Evidence added to inventory"
+                        $ evidence.add_to_inventory(evids["Fingerprint 3 S"])
+                    else:
+                        $ fingerprint_toback = "finger3 NS"
+                        call sophisticatedFinger from _call_sophisticatedFinger_5
+                        "Evidence added to inventory"
+                        $ evidence.add_to_inventory(evids["Fingerprint 3 NS"])
+                    $ collected_objs["grape_print"] = True
                 elif click_object == "pill":
                     "More than half of the print is missing from the tape."
                     "It seems like the textured surface interfered with the sample. This can't be used as evidence now."
@@ -1586,7 +1699,7 @@ label sophisticatedFinger:
     scene dragndrop
     hide screen weedbagcollect
     hide screen pillcollect
-    hide screen browniecollect
+    hide screen grapecollect
     call screen finger_drag
     if("finger2 NS" == fingerprint_toback):
         show finger2_noscale:
@@ -1604,6 +1717,14 @@ label sophisticatedFinger:
         show finger1_scale:
             xpos 1000 
             ypos 100
+    elif("finger3 NS" == fingerprint_toback):
+        show finger1_noscale:
+            xpos 1000 
+            ypos 100
+    elif("finger3 S" == fingerprint_toback):
+        show finger1_scale:
+            xpos 1000 
+            ypos 100
     call screen write_drag
     $ sf = False
     return
@@ -1614,7 +1735,7 @@ label askWhatToBag:
     scene dragndrop
     hide screen weedbagcollect
     hide screen pillcollect
-    hide screen browniecollect
+    hide screen grapecollect
     if num_evidence != 0:
         $ bagging = True
         $ backbuttonenable = False
@@ -1661,13 +1782,28 @@ label useTamperTape:
             $ current_bag_item = ""
             $ need_tape = False
             jump expression last_action
-        elif current_bag_item == "brownie":
+        elif current_bag_item == "fingerprint3":
             call screen tape_drag_screen
             hide openbag
             show sealedbag:
                 xpos 1000 
                 ypos 100
-            $ evidence.add_to_inventory(evids["Bag Brownie"])
+            $ evidence.add_to_inventory(evids["Bag Fingerprint 3"])
+            "Bagged evidence has been added to your inventory"
+            $ num_evidence -= 1
+            hide screen bag_drag_screen
+            $ backbuttonenable = True
+            $ bagging = False
+            $ current_bag_item = ""
+            $ need_tape = False
+            jump expression last_action
+        elif current_bag_item == "grape":
+            call screen tape_drag_screen
+            hide openbag
+            show sealedbag:
+                xpos 1000 
+                ypos 100
+            $ evidence.add_to_inventory(evids["Bag Grape"])
             "Bagged evidence has been added to your inventory"
             $ num_evidence -= 1
             hide screen bag_drag_screen
@@ -1723,6 +1859,7 @@ label bagItem1: # fingerprint on the PILL BOTTLE
     if in_lab: #should not be reachable
         if last_action == "afis" and pressed == "import":
             $ imported_print = "print_1"
+            $ processed_prints[imported_print] = True
             $ renpy.jump("import_print")
     else: #collection scenario
         if bagging == True and current_bag_item == "":
@@ -1745,6 +1882,7 @@ label bagFinger1:
     if in_lab:
         if last_action == "afis" and pressed == "import":
             $ imported_print = "print_1"
+            $ processed_prints[imported_print] = True
             $ renpy.jump("import_print")
     else: #collection scenario
         jump expression last_action
@@ -1753,6 +1891,7 @@ label bagItem2: # fingerprint on the WEEDBAG
     if in_lab: #shouldnt be reachable
         if last_action == "afis" and pressed == "import":
             $ imported_print = "print_3"
+            $ processed_prints[imported_print] = True
             $ renpy.jump("import_print")
     else: #collection scenario
         if bagging == True and current_bag_item == "":
@@ -1775,19 +1914,53 @@ label bagFinger2:
     if in_lab:
         if last_action == "afis" and pressed == "import":
             $ imported_print = "print_3"
+            $ processed_prints[imported_print] = True
             $ renpy.jump("import_print")
     else: #collection scenario
         jump expression last_action
 
-label bagItem4: # brownie, unused rn
+label bagItem3: # fingerprint on the GRAPEFRUIT JUICE BOTTLE
+    if in_lab: #should not be reachable
+        if last_action == "afis" and pressed == "import":
+            $ imported_print = "print_2"
+            $ processed_prints[imported_print] = True
+            $ renpy.jump("import_print")
+    else: #collection scenario
+        if bagging == True and current_bag_item == "":
+            $ current_bag_item = "fingerprint3"
+            $ need_tape = True
+            call screen item_deposit_screen
+            if(scalebard["grape"] == True):
+                $ evidence.delete_from_inventory(evids["Fingerprint 3 S"])
+            else:
+                $ evidence.delete_from_inventory(evids["Fingerprint 3 NS"])
+            $ bagged_objs["grape_print"] = True
+            call screen inventory
+        elif current_bag_item != "":
+            "You've already put something in the evidence bag!"
+            call screen inventory
+        else:
+            "You need an evidence bag!"
+            jump expression last_action
+label bagFinger3:
+    if in_lab:
+        if last_action == "afis" and pressed == "import":
+            $ imported_print = "print_2"
+            $ processed_prints[imported_print] = True
+            $ renpy.jump("import_print")
+    else: #collection scenario
+        jump expression last_action
+
+label bagItem4: # grape
     if in_lab:
         jump expression last_action
     else: #collection scenario
         if bagging == True and current_bag_item == "":
-            $ current_bag_item = "brownie"
+            $ current_bag_item = "grape"
             $ need_tape = True
             call screen item_deposit_screen
-            $ evidence.delete_from_inventory(evids["Brownie"])
+            $ evidence.delete_from_inventory(evids["Grape"])
+            $ bagged_objs["grape"] = True
             call screen inventory
         elif current_bag_item != "":
             "You've already put something in the evidence bag!"

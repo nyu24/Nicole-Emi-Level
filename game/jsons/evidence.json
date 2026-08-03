@@ -41,18 +41,40 @@
         "image_name": "inventory-sbprint2s",
 	"description": "Fingerprint from the plastic bag"
     },
+{
+        "name": "Fingerprint 3 S",
+        "image_name": "inventory-finger1-scale",
+	"description": "Fingerprint from the half drunk grapefruit juice bottle",
+	"usable": true,
+	"action": "bag_item3"
+    },
+{
+        "name": "Fingerprint 3 NS",
+        "image_name": "inventory-finger1-noscale",
+	"description": "Fingerprint from the half drunk grapefruit juice bottle",
+	"usable": true,
+	"action": "bag_item3"
+    },
+{
+        "name": "Bag Fingerprint 3",
+	"usable": true,
+	"action": "bag_finger_3",
+        "image_name": "inventory-sbprint1s",
+	"description": "Fingerprint from the half drunk grapefruit juice bottle"
+    },
+
 
     {
-        "name": "Brownie",
-        "image_name": "inventory-brownie",
-	"description": "A brownie",
+        "name": "Grape",
+        "image_name": "inventory-grape",
+	"description": "A half empty bottle of grapefruit juice.",
 	"usable": true,
 	"action": "bag_item4"
     },
 {
-        "name": "Bag Brownie",
-        "image_name": "inventory-sealedbag",
-	"description": "A brownie"
+        "name": "Bag Grape",
+        "image_name": "inventory-sbgrape",
+	"description": "A half empty bottle of grapefruit juice."
     },
     {
         "name": "Plastic bag",
