@@ -1,4 +1,4 @@
-2026-08-02 00:11:23 UTC
+2026-08-05 01:57:26 UTC
 Windows-11-10.0.26200-SP0
 Ren'Py 8.5.3.26051504
 
@@ -6,142 +6,28 @@ Court Room Scene
 1.0
 Built at 2025-05-07 19:30:19 UTC
 
-Early init took 36 ms
-Loading error handling took 17 ms
-Loading script took 149 ms
-Loading save slot metadata took 18 ms
+Early init took 32 ms
+Loading error handling took 31 ms
+Loading script took 369 ms
+Loading save slot metadata took 14 ms
 Loading persistent took 0 ms
 Set script version to: (8, 3, 3)
-Running init code took 82 ms
-Loading analysis data took 3 ms
-Analyze and compile ATL took 1 ms
-Reloading save slot metadata took 6 ms
-Dump and make backups took 31 ms
+Running init code took 94 ms
+Loading analysis data took 0 ms
+Analyze and compile ATL took 2 ms
+Reloading save slot metadata took 5 ms
+Dump and make backups took 23 ms
 Cleaning cache took 0 ms
 Making clean stores took 0 ms
-Initial gc took 38 ms
-DPI scale factor: 2.000000
+Initial gc took 22 ms
+DPI scale factor: 1.500000
 nvdrs: Loaded, about to disable thread optimizations.
 nvdrs: Disabled thread optimizations.
-Creating interface object took 218 ms
-Init translation took 2 ms
+Creating interface object took 124 ms
+Init translation took 1 ms
 Cleaning stores took 0 ms
 Load screen analysis took 0 ms
-Analyze screens took 8 ms
-Save screen analysis took 14 ms
-Save pyanalysis took 0 ms
-Save bytecode took 19 ms
-Running _start took 1 ms
-Interface start took 952 ms
-
-Initializing gl2 renderer:
-primary display bounds: (0, 0, 2880, 1800)
-swap interval: 1 frames
-Windowed mode.
-Vendor: 'NVIDIA Corporation'
-Renderer: 'NVIDIA GeForce RTX 5050 Laptop GPU/PCIe/SSE2'
-Version: '4.6.0 NVIDIA 591.84'
-Display Info: <Info({'bitsize': 32, 'bytesize': 4, 'masks': (16711680, 65280, 255, 0), 'shifts': (16, 8, 0, 0), 'losses': (0, 0, 0, 8), 'current_w': 2880, 'current_h': 1800, 'refresh_rate': 120, 'hw': False, 'wm': True, 'video_mem': 268435456, 'blit_hw': False, 'blit_hw_CC': False, 'blit_hw_A': False, 'blit_sw': False, 'blit_sw_CC': False, 'blit_sw_A': False})>
-Screen sizes: virtual=(1920, 1080) physical=(2880, 1659) drawable=(2880, 1659)
-Maximum texture size: 4096x4096
-Screen sizes: virtual=(1920, 1080) physical=(2880, 1659) drawable=(2880, 1659)
-Maximum texture size: 4096x4096
-API returned status code 429. {
-  "error": {
-    "code": 429,
-    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 18.493449415s.",
-    "status": "RESOURCE_EXHAUSTED",
-    "details": [
-      {
-        "@type": "type.googleapis.com/google.rpc.Help",
-        "links": [
-          {
-            "description": "Learn more about Gemini API quotas",
-            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
-          }
-        ]
-      },
-      {
-        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
-        "violations": [
-          {
-            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
-            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
-            "quotaDimensions": {
-              "model": "gemini-3.6-flash",
-              "location": "global"
-            },
-            "quotaValue": "20"
-          }
-        ]
-      },
-      {
-        "@type": "type.googleapis.com/google.rpc.RetryInfo",
-        "retryDelay": "18s"
-      }
-    ]
-  }
-}
-
-
-Full traceback:
-  File "game/script.rpy", line 210, in script
-    $ say_responses(responses)
-  File "renpy/ast.py", line 1193, in execute
-    renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "renpy/python.py", line 1276, in py_exec_bytecode
-    exec(bytecode, globals, locals)
-    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "game/script.rpy", line 210, in <module>
-    $ say_responses(responses)
-      ~~~~~~~~~~~~~^^^^^^^^^^^
-  File "game/a_script.rpy", line 128, in say_responses
-    renpy.say(l, response)
-    ~~~~~~~~~^^^^^^^^^^^^^
-  File "renpy/exports/sayexports.py", line 129, in say
-    who(what, *args, **kwargs)
-    ~~~^^^^^^^^^^^^^^^^^^^^^^^
-  File "renpy/character.py", line 1550, in __call__
-    what = self.prefix_suffix("what", self.what_prefix, what, self.what_suffix)
-           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "renpy/character.py", line 1464, in prefix_suffix
-    return sub(prefix) + sub(body, translate=not renpy.game.context().translated) + sub(suffix)
-                         ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^              
-  File "renpy/character.py", line 1443, in sub
-    return renpy.substitutions.substitute(s, scope=scope, force=force, translate=translate)[0]
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^   
-  File "renpy/substitutions.py", line 355, in substitute
-    s = interpolate(s, variables)  # type: ignore
-        ~~~~~~~~~~~^^^^^^^^^^^^^^                
-  File "renpy/substitutions.py", line 89, in interpolate
-    raise e
-  File "renpy/substitutions.py", line 81, in interpolate
-    value = renpy.python.py_eval(code, {}, scope)
-            ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-  File "renpy/python.py", line 1306, in py_eval
-    code = py_compile(code, "eval")
-           ~~~~~~~~~~^^^^^^^^^^^^^^
-  File "renpy/python.py", line 1263, in py_compile
-    raise e
-  File "renpy/python.py", line 1193, in py_compile
-    tree = compile(source, filename, py_mode, ast.PyCF_ONLY_AST | flags, True)
-           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<none>", line 1
-    {\
-    ^ 
-SyntaxError: '{' was never closed
-
-While running game code:
-  File "game/script.rpy", line 210, in script
-    $ say_responses(responses)
-  File "game/script.rpy", line 210, in <module>
-    $ say_responses(responses)
-      ~~~~~~~~~~~~~^^^^^^^^^^^
-  File "game/a_script.rpy", line 128, in say_responses
-    renpy.say(l, response)
-    ~~~~~~~~~^^^^^^^^^^^^^
-  File "<none>", line 1
-    {\
-    ^ 
-SyntaxError: '{' was never closed
+Analyze screens took 14 ms
+Save screen analysis took 7 ms
+Save pyanalysis took 3 ms
+Save bytecode took 0 ms
