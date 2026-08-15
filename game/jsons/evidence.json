@@ -115,7 +115,7 @@
     },
 {
 	"name": "Post blood sample",
-	"image_name": "blood_sample",
+	"image_name": "blood_sample_post",
 	"description": "Post-mortem blood sample",
 	"usable": true,
 	"action": "use_postbs"
@@ -123,7 +123,7 @@
     },
 {
 	"name": "Pre blood sample",
-	"image_name": "blood_sample",
+	"image_name": "blood_sample_pre",
 	"description": "Pre-mortem blood sample",
 	"usable": true,
 	"action": "use_prebs"
@@ -131,7 +131,7 @@
     },
 {
 	"name": "Prepared post blood sample",
-	"image_name": "prepared_blood_sample",
+	"image_name": "blood_sample_post",
 	"description": "Prep post-mortem blood sample",
 	"usable": true,
 	"action": "use_ppostbs"
@@ -139,7 +139,7 @@
     },
 {
 	"name": "Prepared pre blood sample",
-	"image_name": "prepared_blood_sample",
+	"image_name": "blood_sample_pre",
 	"description": "Prep pre-mortem blood sample",
 	"usable": true,
 	"action": "use_pprebs"
