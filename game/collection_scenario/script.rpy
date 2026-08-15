@@ -105,6 +105,7 @@ default choice_SPE = ""
 default askq = True
 default tookpre = False
 default tookpost = False
+default selected_blood = ""
 # LC-MS
 default placed_in_lcms = ""
 default completed_lcms = {"pre": False, "post": False}
@@ -509,14 +510,7 @@ screen write_drag():
             droppable False
             xpos 300 ypos 300
             drag_raise True
-            if("finger2 NS" == fingerprint_toback):
-                child "images/Environment Items/R.png"
-            elif("finger2 S" == fingerprint_toback):
-                child "images/Environment Items/R.png"
-            elif("finger1 NS" == fingerprint_toback or "finger3 NS" == fingerprint_toback):
-                child "images/Environment Items/L.png"
-            elif("finger1 S" == fingerprint_toback or "finger3 S" == fingerprint_toback):
-                child "images/Environment Items/L.png"
+            child "images/Environment Items/R.png"
 
 # LABELS ------------------------------------------------------------------------
 # HOSPITAL SECTION -------------------------------------------------------------------------------------------------------------
@@ -564,7 +558,8 @@ label insidehospital:
             jump parents_testimony
         "Friend" if got_testimony["friends"] != True:
             jump friends_testimony
-        "Return to Nina" if got_testimony["friends"] and got_testimony["parents"]:
+        "Return to Nina":
+            #if got_testimony["friends"] and got_testimony["parents"]:
             jump return_to_nina
 
 label parents_testimony:
@@ -683,7 +678,8 @@ label courtroom: # not really but this is the get score thing
             for item in can_bag:
                 if(collected_objs[item] == False):
                     forgot += 1
-        n normal2 "You didn't collect [forgot] item(s)"
+        if (forgot > 0):
+            n normal2 "You didn't collect [forgot] item(s)"
         if not check_all_scalebar():
             n normal1 "You didn't place the scalebar on every fingerprint you examined."
         if not put_gloves:
@@ -691,7 +687,7 @@ label courtroom: # not really but this is the get score thing
     else:
         n normal1 "You didn't do anything since you skipped it."
         n normal2 "In doing so, you missed 6 pieces of evidence."
-        n talk "Some of which would help you in determining a better explanation for a possible cause of death."
+        n talk "Some of which, might've helped you in determining a better explanation for a possible cause of death."
         n talk "Anyway..."
     n normal1 "In the Lab section you..."
     python:
@@ -699,8 +695,9 @@ label courtroom: # not really but this is the get score thing
         for fingerprint in processed_prints.keys():
             if(not processed_prints[fingerprint]):
                 count += 1
-    n normal1 "You didn't process [count] fingerprint(s) because you either didn't collect them at the house party."
-    n normal2 "Or forgot to do so at the lab."
+    if(count >0):
+        n normal1 "You didn't process [count] fingerprint(s) because you either didn't collect them at the house party."
+        n normal2 "Or forgot to do so at the lab."
 
     n normal1 "That's everything you missed!"
     n normal2 "In the courtroom, you'll be given every piece of evidence you collected and missed. So you can practice."
@@ -737,6 +734,7 @@ label lab_nonina:
                 jump courtroom
             "No":
                 hide nina normal1
+                scene lab_hallway_dim
                 call screen lab_hallway
     else:
         #show screen inventory
@@ -753,6 +751,9 @@ label data_analysis:
     scene afis_interface
     if(not bagged_objs["weedbag_print"] and not bagged_objs["pill_print"] and not bagged_objs["grape_print"]):
         n normal1 "You don't have any fingerprint to import..."
+        jump lab_nonina
+    elif (processed_prints["print_1"] and processed_prints["print_2"] and processed_prints["print_3"]): #if processed all them prints...
+        n normal1 "You've done everything here."
         jump lab_nonina
     else:
         call screen data_analysis_lab # fingerprinting only (button)
@@ -952,6 +953,10 @@ label afis:
 # there are 5 steps for blood, 1. dilute the mixture, 2. condition the cartridge, 
 # 3. load it with the sample, 4. wash the cartridge, 5. elution (obtain the extracted compound)
 label solid_phase_extraction:
+    # check if already done
+    if added_SPE_post and added_SPE_pre:
+        n normal1 "There's nothing else to do here."
+        jump materials
     # adding correct toolbox items
     $ toolbox.add_to_inventory(tools["100% Methanol"])
     $ toolbox.add_to_inventory(tools["Water"])
@@ -979,10 +984,12 @@ label solid_phase_extraction:
     n think "Which blood sample do you want to dilute?"
     menu:
         "Post-mortem blood sample" if not has_SPE_post:
+            $ selected_blood = "post"
             show beaker_blood:
                 xalign 0.5
                 yalign 0.5
         "Pre-mortem blood sample" if not has_SPE_pre:
+            $ selected_blood = "pre"
             show beaker_blood:
                 xalign 0.5
                 yalign 0.5
@@ -995,10 +1002,10 @@ label SPE_dilute_question:
     call screen inventory
     return
 label SPE_condition:
-    if(not tookpre):
+    if(not tookpre and selected_blood == "pre"):
         $ evidence.add_to_inventory(evids["Pre blood sample"])
         $ tookpre = True
-    elif(not tookpost):
+    elif(not tookpost and selected_blood == "post"):
         $ evidence.add_to_inventory(evids["Post blood sample"])
         $ tookpost = True
     scene spe11
@@ -1132,13 +1139,13 @@ label SPE_elution2:
         "37 Celsius": # this is the correct temperature, ummmm may change this
             scene spe44
             "You've obtained the prepared sample."
-            if(not added_SPE_post and has_SPE_post):
+            if((not added_SPE_post) and has_SPE_post):
                 $ evidence.add_to_inventory(evids["Prepared post blood sample"])
                 $ added_SPE_post = True
-            if(not added_SPE_pre and has_SPE_pre):
+            elif((not added_SPE_pre) and has_SPE_pre):
                 $ evidence.add_to_inventory(evids["Prepared pre blood sample"])
                 $ added_SPE_pre = True
-            if(has_SPE_post and has_SPE_pre):
+            elif(has_SPE_post and has_SPE_pre):
                 $ choice_SPE = "COMPLETED"
             # reset counter
             hide screen spe_spo
@@ -1244,16 +1251,17 @@ label useWater: # use water
                 "Wrong amount."
                 jump expression inv_call_SPE
 label usePost:
-    $ has_SPE_post = True
+    
     if(step_num_SPE == 3):
+        $ has_SPE_post = True
         $ evidence.delete_from_inventory(evids["Post blood sample"])
         jump expression step_SPE
     else:
         "Wrong compound!"
         jump expression inv_call_SPE
 label usePre:
-    $ has_SPE_pre = True
     if(step_num_SPE == 3):
+        $ has_SPE_pre = True
         $ evidence.delete_from_inventory(evids["Pre blood sample"])
         jump expression step_SPE
     else:
@@ -1300,8 +1308,12 @@ label house:
     $toolbox.add_to_inventory(tools["Evidence Bag"])
     $toolbox.add_to_inventory(tools["Tamper Evident Tape"])
     show screen inventory
-    if collected_objs["pill"] == True:
+    if collected_objs["pill"] and collected_objs["grape"]:
+        scene bk_kitchen_nopillgrape
+    elif collected_objs["pill"]:
         scene bk_kitchen_nopill
+    elif collected_objs["grape"]:
+        scene bk_kitchen_nogrape
     else: 
         scene kitchen
     $ last_area = "houseoutside"
@@ -1683,6 +1695,7 @@ label useBackingcard:
                     "It seems like the textured surface interfered with the sample. This can't be used as evidence now."
                     $ num_evidence -= 1
                 $ num_evidence += 1
+                $ sf = False
                 jump expression last_action
         else:
             "There's nothing to use this on."
@@ -1726,7 +1739,6 @@ label sophisticatedFinger:
             xpos 1000 
             ypos 100
     call screen write_drag
-    $ sf = False
     return
 
 # END OF FINGERPRINTS _____

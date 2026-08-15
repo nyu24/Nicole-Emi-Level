@@ -143,7 +143,7 @@ init python:
 
     print_1_question = MCQ(
         question = "What kind of pattern is shown in the rightmost fingerprint?",
-        choices = [("Checkered", False), ("Zigzags", False), ("Whorls", True)],
+        choices = [("Arch", False), ("Loop", False), ("Whorls", True)],
         responses = [["This is not a checkered pattern!", "Give it another go!"],
                     ["This is not a zigzag pattern!", "Try again!"],
                     ["This is a whorl! Good job!", "Let's finish the rest of the comparison."]]
@@ -163,7 +163,7 @@ init python:
 
     print_2_question = MCQ(
         question = "What kind of pattern is shown in the rightmost fingerprint?",
-        choices = [("Loop", True), ("Zigzags", False), ("Whorls", False)],
+        choices = [("Loop", True), ("Arch", False), ("Whorls", False)],
         responses = [["This is a loop! Good job!", "Let's finish the rest of the comparison."],
                     ["This is not a zigzag pattern!", "Try again!"],
                     ["This is not a whorl pattern!", "Give it another go!"]]
@@ -173,7 +173,7 @@ init python:
 
     print_3_question = MCQ(
         question = "What kind of pattern is shown in the righmost fingerprint?",
-        choices = [("Whorls", False), ("Loop", True), ("Ripples", False)],
+        choices = [("Whorls", False), ("Loop", True), ("Arch", False)],
         responses = [["You're kinda right, but not completey!", "Think about it some more and try again."],
                     ["That's right!", "Isn't it cool?", "Let's move on."],
                     ["They do look like ripples!", "but not quite!", "Let's try again."]]
